@@ -1,5 +1,21 @@
 import { Resend } from "resend";
 
+function getAppBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  }
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("NEXT_PUBLIC_APP_URL is required in production. Set it in Vercel environment variables.");
+  }
+
+  return "http://localhost:3000";
+}
+
 export interface SendEmailResult {
   success: boolean;
   messageId?: string;
@@ -23,8 +39,7 @@ export async function sendSelectionEmail(
   try {
     const resend = new Resend(apiKey);
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const baseUrl = getAppBaseUrl();
 
     const activationUrl = activationToken
       ? `${baseUrl}/student/activate?token=${activationToken}`

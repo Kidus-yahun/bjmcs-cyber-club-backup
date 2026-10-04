@@ -4,6 +4,18 @@
  * Central place for club branding and site-wide constants.
  */
 
+function getAppBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  }
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
+  }
+
+  return "http://localhost:3000";
+}
+
 export const siteConfig = {
   /** Abbreviated display name (current official name) */
   name: "BJMCS Cyber Club",
@@ -24,5 +36,5 @@ export const siteConfig = {
   description: "Official platform of BJMCS Cyber Club",
 
   /** Public-facing base URL (set via environment in production) */
-  url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  url: getAppBaseUrl(),
 } as const;
