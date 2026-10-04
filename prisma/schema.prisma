@@ -1,0 +1,390 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RegistrationSettings {
+  id                String    @id @default("default")
+  isOpen            Boolean   @default(false)
+  deadline          DateTime?
+  clubDisplayName   String    @default("BJMCS Cyber Club")
+  englishNameFuture String?
+  amharicNameFuture String?
+  updatedAt         DateTime  @updatedAt
+}
+
+model Application {
+  id                   String                @id @default(cuid())
+  reference            String                @unique
+  status               ApplicationStatus     @default(PENDING)
+  statusUpdatedAt      DateTime?
+  selectionEmailStatus SelectionEmailStatus  @default(NOT_SENT)
+  emailAttemptedAt     DateTime?
+  emailSentAt          DateTime?
+  emailError           String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  fullName             String
+  age                  Int
+  gender               String
+  phone                String
+  email                String
+  grade                String
+  section              String
+  hasStudiedCyber      Boolean
+  cyberStudyDesc       String?
+  programmingExp       ProgrammingExperience @default(NONE)
+  programmingLangs     String[]
+  cyberTopics          String[]
+  previousExperience   String[]
+  motivationJoin       String
+  motivationLearn      String
+  areasOfInterest      String[]
+  weeklyAvailability   WeeklyAvailability
+  additionalSkills     String?
+  howHeardAboutUs      String?
+  agreedToAccuracy     Boolean
+  agreedToRules        Boolean
+  agreedToLegal        Boolean
+  agreedToNoGuarantee  Boolean
+  termsAcceptedAt      DateTime              @default(now())
+  ethicsAgreement      Boolean               @default(false)
+  operatingSystems     String[]
+  termsAgreement       Boolean               @default(false)
+  projects             Project[]
+  student              Student?
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Project {
+  id            String      @id @default(cuid())
+  projectName   String
+  description   String?
+  projectType   String?
+  githubUrl     String?
+  portfolioUrl  String?
+  fileReference String?
+  applicationId String
+  files         String[]
+  links         String[]
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Student {
+  id                  String                   @id @default(cuid())
+  applicationId       String                   @unique
+  email               String                   @unique
+  passwordHash        String?
+  isActive            Boolean                  @default(false)
+  activationToken     String?                  @unique
+  activationExpires   DateTime?
+  lastLoginAt         DateTime?
+  groupId             String?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  academicRecord      AcademicRecord?
+  announcementTargets AnnouncementTarget[]
+  attendances         Attendance[]
+  faydaIdentity       FaydaIdentity?
+  materialTargets     LearningMaterialTarget[]
+  messages            Message[]
+  application         Application              @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  group               Group?                   @relation(fields: [groupId], references: [id])
+  submissions         Submission[]
+  taskAssignments     TaskAssignment[]
+}
+
+model AttendanceSession {
+  id        String        @id @default(cuid())
+  date      DateTime
+  title     String
+  groupId   String?
+  status    SessionStatus @default(OPEN)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  records   Attendance[]
+  group     Group?        @relation(fields: [groupId], references: [id])
+}
+
+model Attendance {
+  id        String            @id @default(cuid())
+  studentId String
+  status    AttendanceStatus
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  sessionId String
+  session   AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student   Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, sessionId])
+}
+
+model TaskAssignment {
+  id         String               @id @default(cuid())
+  taskId     String
+  targetType AssignmentTargetType
+  groupId    String?
+  studentId  String?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+  group      Group?               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student    Student?             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  task       Task                 @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id                   String           @id @default(cuid())
+  title                String
+  description          String
+  instructions         String
+  deadline             DateTime
+  status               TaskStatus       @default(DRAFT)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  allowLateSubmissions Boolean          @default(true)
+  attachmentUrl        String?
+  submissions          Submission[]
+  assignments          TaskAssignment[]
+}
+
+model Submission {
+  id               String           @id @default(cuid())
+  studentId        String
+  taskId           String
+  submissionType   SubmissionType   @default(LINK)
+  content          String
+  link             String?
+  originalFileName String?
+  studentNote      String?
+  status           SubmissionStatus @default(SUBMITTED)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  fileUrl          String?
+  links            String[]
+  score            Score?
+  student          Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  task             Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, taskId])
+}
+
+model Score {
+  id           String     @id @default(cuid())
+  submissionId String     @unique
+  points       Float
+  feedback     String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+model LearningMaterialTarget {
+  id         String               @id @default(cuid())
+  materialId String
+  targetType AssignmentTargetType
+  groupId    String?
+  studentId  String?
+  group      Group?               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  material   LearningMaterial     @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  student    Student?             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model LearningMaterial {
+  id           String                   @id @default(cuid())
+  title        String
+  description  String?
+  category     String
+  url          String
+  status       MaterialStatus           @default(DRAFT)
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  resourceType String                   @default("LINK")
+  targets      LearningMaterialTarget[]
+}
+
+model Mentor {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  groups    Group[]
+}
+
+model Group {
+  id                  String                   @id @default(cuid())
+  name                String
+  mentorId            String?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  announcementTargets AnnouncementTarget[]
+  attendanceSessions  AttendanceSession[]
+  mentor              Mentor?                  @relation(fields: [mentorId], references: [id])
+  materialTargets     LearningMaterialTarget[]
+  students            Student[]
+  taskAssignments     TaskAssignment[]
+}
+
+model FaydaIdentity {
+  id          String   @id @default(cuid())
+  studentId   String   @unique
+  legalName   String
+  gender      String
+  birthdate   DateTime
+  nationality String
+  externalId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model AnnouncementTarget {
+  id             String               @id @default(cuid())
+  announcementId String
+  targetType     AssignmentTargetType
+  groupId        String?
+  studentId      String?
+  announcement   Announcement         @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  group          Group?               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student        Student?             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Announcement {
+  id          String               @id @default(cuid())
+  title       String
+  content     String
+  status      AnnouncementStatus   @default(DRAFT)
+  publishedAt DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  targets     AnnouncementTarget[]
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String
+  action    String
+  target    String?
+  timestamp DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  studentId String
+  sender    String
+  title     String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model AcademicRecord {
+  id               String            @id @default(cuid())
+  studentId        String            @unique
+  midExamScore     Float?
+  finalExamScore   Float?
+  isFinalized      Boolean           @default(false)
+  isApprovedByDG   Boolean           @default(false)
+  certificateState CertificateStatus @default(RESULTS_NOT_FINAL)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  student          Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+enum ApplicationStatus {
+  PENDING
+  SELECTED
+  NOT_SELECTED
+}
+
+enum ProgrammingExperience {
+  NONE
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum WeeklyAvailability {
+  LESS_THAN_2_HOURS
+  HOURS_2_TO_4
+  HOURS_4_TO_6
+  MORE_THAN_6_HOURS
+}
+
+enum SessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum AssignmentTargetType {
+  ALL
+  GROUP
+  INDIVIDUAL
+}
+
+enum SelectionEmailStatus {
+  NOT_SENT
+  SENT
+  FAILED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum TaskStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  LATE
+  GRADED
+}
+
+enum MaterialStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum CertificateStatus {
+  RESULTS_NOT_FINAL
+  PENDING_APPROVAL
+  APPROVED_READY
+  CERTIFICATE_AVAILABLE
+}
+
+enum SubmissionType {
+  LINK
+  PDF
+}
