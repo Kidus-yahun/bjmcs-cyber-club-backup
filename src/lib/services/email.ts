@@ -116,8 +116,15 @@ BJMCS Cyber Club Team
     });
 
     if (error) {
-      console.error("[EMAIL SERVICE ERROR] Resend:", error);
-      return { success: false, error: error.message };
+      console.error("[EMAIL SERVICE ERROR] Resend rejected the request", {
+        to,
+        from: "BJMCS Cyber Club <noreply@bjmcs-cyber.bbroot.com>",
+        subject: "Congratulations! You have been selected for BJMCS Cyber Club",
+        error,
+        statusCode: (error as { statusCode?: number })?.statusCode,
+        body: (error as { body?: unknown })?.body,
+      });
+      return { success: false, error: (error as { message?: string })?.message || "Resend rejected the email request." };
     }
 
     return {
