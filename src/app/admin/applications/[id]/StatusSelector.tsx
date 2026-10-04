@@ -78,7 +78,7 @@ export default function StatusSelector({
           
           {emailStatus === "SENT" ? (
             <span className="inline-flex items-center gap-1 font-medium text-green-700 bg-green-100 dark:text-green-400 dark:bg-green-900/30 px-2 py-0.5 rounded shadow-sm border border-green-200 dark:border-green-800/50">
-              <ShieldCheck className="w-3 h-3" /> Sent
+              <ShieldCheck className="w-3 h-3" /> Email Sent
             </span>
           ) : emailStatus === "FAILED" ? (
             <div className="flex items-center gap-2">

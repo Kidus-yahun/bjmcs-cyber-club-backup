@@ -53,8 +53,12 @@ export async function processSelectionEmail(id: string) {
   try {
     await verifyAdmin();
     const application = await db.application.findUnique({ where: { id }, include: { student: true } });
-    if (!application || application.status !== "SELECTED" || application.selectionEmailStatus === "SENT") {
+    if (!application || application.status !== "SELECTED") {
       return { success: false, error: "Invalid state for email sending." };
+    }
+
+    if (application.selectionEmailStatus === "SENT") {
+      return { success: false, error: "Acceptance email has already been sent for this application." };
     }
 
     // 1. Provision or update student account with activation token
