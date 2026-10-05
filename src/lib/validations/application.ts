@@ -3,6 +3,8 @@ import { ProgrammingExperience, WeeklyAvailability } from "@prisma/client";
 
 export const GRADES = ["9", "10", "11", "12"] as const;
 export const SECTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"] as const;
+export const PROGRAMMING_LANGUAGE_OPTIONS = ["Python", "C", "C++", "Java", "JavaScript", "TypeScript", "Bash", "PowerShell", "Other", "None"] as const;
+export const OPERATING_SYSTEM_OPTIONS = ["Windows", "Linux", "macOS", "Other"] as const;
 
 export const IdentitySchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters").max(100),
@@ -22,10 +24,25 @@ export const TechBackgroundSchema = z.object({
   hasStudiedCyber: z.boolean(),
   cyberStudyDesc: z.string().max(1000).optional().nullable(),
   programmingExp: z.nativeEnum(ProgrammingExperience),
-  programmingLangs: z.array(z.string()).max(20),
-  operatingSystems: z.array(z.string()).max(20),
+  programmingLangs: z.array(z.enum(PROGRAMMING_LANGUAGE_OPTIONS)).max(PROGRAMMING_LANGUAGE_OPTIONS.length),
+  programmingLanguageOther: z.string().trim().max(200).optional().default(""),
+  operatingSystems: z.array(z.enum(OPERATING_SYSTEM_OPTIONS)).max(OPERATING_SYSTEM_OPTIONS.length),
+  operatingSystemOther: z.string().trim().max(100).optional().default(""),
   cyberTopics: z.array(z.string()).max(20),
   previousExperience: z.array(z.string()).max(20),
+}).superRefine((data, context) => {
+  if (new Set(data.programmingLangs).size !== data.programmingLangs.length) {
+    context.addIssue({ code: "custom", path: ["programmingLangs"], message: "Do not select the same language more than once." });
+  }
+  if (data.programmingLangs.includes("None") && data.programmingLangs.length > 1) {
+    context.addIssue({ code: "custom", path: ["programmingLangs"], message: "Select None or programming languages, not both." });
+  }
+  if (data.operatingSystems.includes("Other") && !data.operatingSystemOther.trim()) {
+    context.addIssue({ code: "custom", path: ["operatingSystemOther"], message: "Specify the other operating system." });
+  }
+  if (data.programmingLangs.includes("Other") && !data.programmingLanguageOther.trim()) {
+    context.addIssue({ code: "custom", path: ["programmingLanguageOther"], message: "Specify the other programming language(s)." });
+  }
 });
 
 export const MotivationSchema = z.object({

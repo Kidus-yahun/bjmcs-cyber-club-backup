@@ -24,6 +24,23 @@ async function generateReferenceNumber(): Promise<string> {
 
 export async function createApplication(data: CompleteApplicationPayload) {
   const reference = await generateReferenceNumber();
+  const programmingLangs: string[] = data.techBackground.programmingLangs
+    .filter((language) => language !== "None" && language !== "Other");
+  if (data.techBackground.programmingLangs.includes("Other")) {
+    programmingLangs.push(
+      ...data.techBackground.programmingLanguageOther
+        .split(",")
+        .map((language) => language.trim())
+        .filter(Boolean)
+        .map((language) => `Other: ${language}`)
+    );
+  }
+
+  const operatingSystems: string[] = data.techBackground.operatingSystems
+    .filter((operatingSystem) => operatingSystem !== "Other");
+  if (data.techBackground.operatingSystems.includes("Other")) {
+    operatingSystems.push(`Other: ${data.techBackground.operatingSystemOther.trim()}`);
+  }
 
   const application = await db.application.create({
     data: {
@@ -41,8 +58,8 @@ export async function createApplication(data: CompleteApplicationPayload) {
       hasStudiedCyber: data.techBackground.hasStudiedCyber,
       cyberStudyDesc: data.techBackground.cyberStudyDesc,
       programmingExp: data.techBackground.programmingExp,
-      programmingLangs: data.techBackground.programmingLangs,
-      operatingSystems: data.techBackground.operatingSystems,
+      programmingLangs,
+      operatingSystems,
       cyberTopics: data.techBackground.cyberTopics,
       previousExperience: data.techBackground.previousExperience,
 

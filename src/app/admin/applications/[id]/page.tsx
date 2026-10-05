@@ -127,12 +127,20 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
               </p>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Languages</p>
                 <div className="flex flex-wrap gap-2">
                   {application.programmingLangs.length ? application.programmingLangs.map(l => (
                     <span key={l} className="px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50 rounded-md text-xs font-medium shadow-sm">{l}</span>
+                  )) : <span className="text-slate-400 text-sm italic">None</span>}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Operating Systems</p>
+                <div className="flex flex-wrap gap-2">
+                  {application.operatingSystems.length ? application.operatingSystems.map((operatingSystem) => (
+                    <span key={operatingSystem} className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50 rounded-md text-xs font-medium shadow-sm">{operatingSystem}</span>
                   )) : <span className="text-slate-400 text-sm italic">None</span>}
                 </div>
               </div>

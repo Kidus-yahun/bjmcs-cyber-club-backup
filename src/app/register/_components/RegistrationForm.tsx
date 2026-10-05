@@ -42,6 +42,14 @@ const ArrowLeftIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
 );
 
+function toggleChoice(current: string[], choice: string): string[] {
+  if (choice === "None") return current.includes("None") ? [] : ["None"];
+  const choices = current.filter((value) => value !== "None");
+  return choices.includes(choice)
+    ? choices.filter((value) => value !== choice)
+    : [...choices, choice];
+}
+
 export function RegistrationForm() {
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +65,9 @@ export function RegistrationForm() {
       cyberStudyDesc: "",
       programmingExp: "NONE",
       programmingLangs: [],
+      programmingLanguageOther: "",
       operatingSystems: [],
+      operatingSystemOther: "",
       cyberTopics: [],
       previousExperience: []
     },
@@ -351,27 +361,85 @@ export function RegistrationForm() {
                   </select>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Programming Languages (Comma separated)</label>
-                  <input
-                    type="text"
-                    placeholder="Python, JS, C++..."
-                    className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-                    value={formData.techBackground.programmingLangs.join(", ")}
-                    onChange={(e) => setFormData((p: any) => ({...p, techBackground: {...p.techBackground, programmingLangs: e.target.value.split(",").map(s => s.trim()).filter(Boolean)}}))}
-                  />
-                </div>
+                <fieldset className="space-y-3">
+                  <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Programming Languages</legend>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {["Python", "C", "C++", "Java", "JavaScript", "TypeScript", "Bash", "PowerShell", "Other", "None"].map((language) => (
+                      <label key={language} className="flex min-h-11 items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900/60">
+                        <input
+                          type="checkbox"
+                          checked={formData.techBackground.programmingLangs.includes(language)}
+                          onChange={() => setFormData((previous: any) => {
+                            const programmingLangs = toggleChoice(previous.techBackground.programmingLangs, language);
+                            return {
+                              ...previous,
+                              techBackground: {
+                                ...previous.techBackground,
+                                programmingLangs,
+                                programmingLanguageOther: programmingLangs.includes("Other") ? previous.techBackground.programmingLanguageOther : "",
+                              },
+                            };
+                          })}
+                          className="h-4 w-4 accent-blue-600"
+                        />
+                        <span>{language}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {formData.techBackground.programmingLangs.includes("Other") && (
+                    <Input
+                      label="Specify other programming language(s)"
+                      placeholder="For example: Go, Rust"
+                      required
+                      value={formData.techBackground.programmingLanguageOther}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((previous: any) => ({
+                        ...previous,
+                        techBackground: { ...previous.techBackground, programmingLanguageOther: e.target.value },
+                      }))}
+                      className="bg-white dark:bg-slate-950"
+                    />
+                  )}
+                </fieldset>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Operating Systems (Comma separated)</label>
-                  <input
-                    type="text"
-                    placeholder="Windows, Linux, macOS..."
-                    className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-                    value={formData.techBackground.operatingSystems.join(", ")}
-                    onChange={(e) => setFormData((p: any) => ({...p, techBackground: {...p.techBackground, operatingSystems: e.target.value.split(",").map(s => s.trim()).filter(Boolean)}}))}
-                  />
-                </div>
+                <fieldset className="space-y-3">
+                  <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Operating Systems</legend>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {["Windows", "Linux", "macOS", "Other"].map((operatingSystem) => (
+                      <label key={operatingSystem} className="flex min-h-11 items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900/60">
+                        <input
+                          type="checkbox"
+                          checked={formData.techBackground.operatingSystems.includes(operatingSystem)}
+                          onChange={() => setFormData((previous: any) => {
+                            const operatingSystems = toggleChoice(previous.techBackground.operatingSystems, operatingSystem);
+                            return {
+                              ...previous,
+                              techBackground: {
+                                ...previous.techBackground,
+                                operatingSystems,
+                                operatingSystemOther: operatingSystems.includes("Other") ? previous.techBackground.operatingSystemOther : "",
+                              },
+                            };
+                          })}
+                          className="h-4 w-4 accent-blue-600"
+                        />
+                        <span>{operatingSystem}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {formData.techBackground.operatingSystems.includes("Other") && (
+                    <Input
+                      label="Specify other operating system"
+                      placeholder="For example: FreeBSD"
+                      required
+                      value={formData.techBackground.operatingSystemOther}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((previous: any) => ({
+                        ...previous,
+                        techBackground: { ...previous.techBackground, operatingSystemOther: e.target.value },
+                      }))}
+                      className="bg-white dark:bg-slate-950"
+                    />
+                  )}
+                </fieldset>
                 
                 <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
                   <label className="flex items-center space-x-3 cursor-pointer">
