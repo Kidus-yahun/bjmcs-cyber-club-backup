@@ -4,9 +4,10 @@ import { db } from "@/lib/db";
 import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { ApplicationStatus } from "@prisma/client";
-import { sendSelectionEmail } from "@/lib/services/email";
+import { sendApplicationUpdateEmail, sendSelectionEmail } from "@/lib/services/email";
 import { cookies } from "next/headers";
 import { verifyJwt } from "@/lib/auth";
+import { kickStudent as kickStudentAction } from "@/lib/actions/students";
 
 async function verifyAdmin() {
   const token = (await cookies()).get("session")?.value;
@@ -19,10 +20,17 @@ async function verifyAdmin() {
 export async function updateApplicationStatus(id: string, status: ApplicationStatus) {
   try {
     await verifyAdmin();
-    const application = await db.application.findUnique({ where: { id } });
+    const application = await db.application.findUnique({
+      where: { id },
+      include: { student: { select: { kickedAt: true } } },
+    });
     if (!application) return { success: false, error: "Application not found" };
+    if (status === "SELECTED" && application.student?.kickedAt) {
+      return { success: false, error: "Restore this student before selecting them again." };
+    }
 
     const isTransitioningToSelected = status === "SELECTED" && application.status !== "SELECTED";
+    const isTransitioningToNotSelected = status === "NOT_SELECTED" && application.status !== "NOT_SELECTED";
 
     // 1. Update primary status
     await db.application.update({
@@ -38,6 +46,10 @@ export async function updateApplicationStatus(id: string, status: ApplicationSta
       await processSelectionEmail(id);
     }
 
+    if (isTransitioningToNotSelected && application.applicationUpdateEmailStatus !== "SENT") {
+      await processApplicationUpdateEmail(id);
+    }
+
     revalidatePath("/admin/applications");
     revalidatePath(`/admin/applications/${id}`);
     revalidatePath("/admin");
@@ -49,11 +61,62 @@ export async function updateApplicationStatus(id: string, status: ApplicationSta
   }
 }
 
+export async function processApplicationUpdateEmail(id: string) {
+  try {
+    await verifyAdmin();
+    const application = await db.application.findUnique({ where: { id } });
+    if (!application || application.status !== "NOT_SELECTED") {
+      return { success: false, error: "Invalid state for application update email." };
+    }
+    if (application.applicationUpdateEmailStatus === "SENT") {
+      return { success: false, error: "Application update email has already been sent." };
+    }
+
+    await db.application.update({
+      where: { id },
+      data: { applicationUpdateEmailAttemptedAt: new Date() },
+    });
+
+    const result = await sendApplicationUpdateEmail(
+      application.email,
+      application.fullName,
+      application.reference
+    );
+
+    await db.application.update({
+      where: { id },
+      data: result.success
+        ? {
+            applicationUpdateEmailStatus: "SENT",
+            applicationUpdateEmailSentAt: new Date(),
+            applicationUpdateEmailError: null,
+          }
+        : {
+            applicationUpdateEmailStatus: "FAILED",
+            applicationUpdateEmailError: result.error || "Unknown delivery error",
+          },
+    });
+
+    revalidatePath(`/admin/applications/${id}`);
+    revalidatePath("/admin/applications");
+    return result.success
+      ? { success: true }
+      : { success: false, error: result.error || "Application update email failed." };
+  } catch (error) {
+    console.error("Critical error in processApplicationUpdateEmail:", error);
+    return { success: false, error: "Internal server error during application update email processing." };
+  }
+}
+
+export async function kickSelectedStudent(studentId: string, reason?: string) {
+  return kickStudentAction(studentId, reason);
+}
+
 export async function processSelectionEmail(id: string) {
   try {
     await verifyAdmin();
     const application = await db.application.findUnique({ where: { id }, include: { student: true } });
-    if (!application || application.status !== "SELECTED") {
+    if (!application || application.status !== "SELECTED" || application.student?.kickedAt) {
       return { success: false, error: "Invalid state for email sending." };
     }
 

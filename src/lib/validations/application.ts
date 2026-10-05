@@ -10,6 +10,7 @@ export const IdentitySchema = z.object({
   gender: z.string().min(1, "Please specify your gender").max(50),
   phone: z.string().regex(/^\+?[0-9\s\-()]{9,20}$/, "Invalid phone number format"),
   email: z.string().email("Invalid email address"),
+  telegramUsername: z.string().trim().min(5, "Telegram username must be at least 5 characters").max(33, "Telegram username must be at most 32 characters, with an optional @").regex(/^@?[A-Za-z][A-Za-z0-9_]{4,31}$/, "Enter a valid Telegram username"),
 });
 
 export const SchoolSchema = z.object({

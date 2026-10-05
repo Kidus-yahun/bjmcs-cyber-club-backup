@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle, Input, Button } from "@/components/ui";
+import { Card, CardContent } from "@/components/ui";
 import Link from "next/link";
 import AssignGroupSelect from "./_components/AssignGroupSelect";
 
@@ -27,6 +27,7 @@ export default async function AdminStudentsPage() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Active Students</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage enrolled student profiles and cohorts.</p>
         </div>
+        <Link href="/admin/students/kicked" className="text-sm font-semibold text-red-700 hover:underline dark:text-red-400">Kicked Students</Link>
       </div>
 
       <Card className="border-slate-200 dark:border-slate-800 shadow-sm">

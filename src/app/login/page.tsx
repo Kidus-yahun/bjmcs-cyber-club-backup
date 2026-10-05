@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifyJwt } from "@/lib/auth";
+import { db } from "@/lib/db";
 import UnifiedLoginForm from "./UnifiedLoginForm";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ blocked?: string }> }) {
+  const { blocked } = await searchParams;
   const token = (await cookies()).get("session")?.value;
   if (token) {
     const payload = await verifyJwt(token);
@@ -14,7 +16,10 @@ export default async function LoginPage() {
       if (payload.role === "ADMIN") {
         redirect("/admin");
       } else if (payload.role === "STUDENT") {
-        redirect("/student");
+        const student = payload.studentId
+          ? await db.student.findUnique({ where: { id: payload.studentId }, select: { isActive: true, kickedAt: true } })
+          : null;
+        if (student?.isActive && !student.kickedAt) redirect("/student");
       }
     }
   }
@@ -77,7 +82,7 @@ export default async function LoginPage() {
           </div>
           
           <div className="mt-8 bg-slate-50 dark:bg-slate-800/50 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <UnifiedLoginForm />
+            <UnifiedLoginForm blocked={blocked === "1"} />
           </div>
         </div>
       </div>

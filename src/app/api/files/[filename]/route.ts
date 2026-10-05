@@ -3,6 +3,7 @@ import { join } from "path";
 import { createReadStream, existsSync } from "fs";
 import { stat } from "fs/promises";
 import { verifyJwt } from "@/lib/auth";
+import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ filename: string }> }) {
   try {
@@ -17,6 +18,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     const payload = await verifyJwt(token);
     if (!payload) return new NextResponse("Unauthorized", { status: 401 });
+
+    if (payload.role === "STUDENT") {
+      const student = payload.studentId
+        ? await db.student.findUnique({ where: { id: payload.studentId }, select: { isActive: true, kickedAt: true } })
+        : null;
+      if (!student?.isActive || student.kickedAt) return new NextResponse("Forbidden", { status: 403 });
+    }
 
     // Both Admin and Students can access files for now (Admin checks student submissions, Student checks their own/project files)
     

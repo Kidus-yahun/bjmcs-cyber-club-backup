@@ -33,6 +33,7 @@ export async function createApplication(data: CompleteApplicationPayload) {
       gender: data.identity.gender,
       phone: data.identity.phone,
       email: data.identity.email,
+      telegramUsername: data.identity.telegramUsername,
 
       grade: data.school.grade,
       section: data.school.section,

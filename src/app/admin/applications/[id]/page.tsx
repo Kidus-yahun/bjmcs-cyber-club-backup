@@ -12,7 +12,7 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
   
   const application = await db.application.findUnique({
     where: { id },
-    include: { projects: true },
+    include: { projects: true, student: { select: { id: true, kickedAt: true } } },
   });
 
   if (!application) return notFound();
@@ -45,8 +45,11 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
         <div className="w-full md:w-auto">
           <StatusSelector 
             applicationId={application.id} 
+            studentId={application.student?.id ?? null}
+            studentKicked={Boolean(application.student?.kickedAt)}
             currentStatus={application.status} 
-            emailStatus={application.selectionEmailStatus} 
+            emailStatus={application.selectionEmailStatus}
+            applicationUpdateEmailStatus={application.applicationUpdateEmailStatus}
           />
         </div>
       </div>
@@ -76,6 +79,10 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50 col-span-2 sm:col-span-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Email</p>
                 <p className="font-medium text-slate-900 dark:text-slate-100 truncate" title={application.email}>{application.email}</p>
+              </div>
+              <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50 col-span-2 sm:col-span-1">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Telegram Username</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{application.telegramUsername || "Not provided"}</p>
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Grade</p>

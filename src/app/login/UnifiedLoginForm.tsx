@@ -5,19 +5,22 @@ import { loginAction } from "./actions";
 import { Button, Input, Alert } from "@/components/ui";
 import { LockIcon, UserIcon } from "lucide-react"; // Assuming lucide-react is available for icons, else we can use standard inputs without icons. Let's just use standard inputs. I'll omit icons for safety if not 100% sure, but the instructions say to upgrade to use new UI components beautifully.
 
-export default function UnifiedLoginForm() {
+export default function UnifiedLoginForm({ blocked = false }: { blocked?: boolean }) {
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(blocked ? "Your Cyber Club account has been deactivated by an administrator. Please contact the Cyber Club administrators if you believe this was a mistake." : null);
+  const [isBlocked, setIsBlocked] = useState(blocked);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setIsBlocked(false);
     const formData = new FormData(e.currentTarget);
 
     startTransition(async () => {
       const result = await loginAction(formData);
       if (result?.error) {
         setError(result.error);
+        setIsBlocked(result.blocked === true);
       }
     });
   };
@@ -26,7 +29,7 @@ export default function UnifiedLoginForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
         <div className="animate-in fade-in slide-in-from-top-1">
-          <Alert variant="error" title="Authentication Failed">
+          <Alert variant="error" title={isBlocked ? "Account Blocked" : "Authentication Failed"}>
             {error}
           </Alert>
         </div>

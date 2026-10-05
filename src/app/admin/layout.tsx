@@ -15,6 +15,7 @@ import {
   Users, 
   UserPlus, 
   Megaphone,
+  ShieldAlert,
   Menu,
   X,
   LogOut
@@ -31,6 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Tasks & Submissions", href: "/admin/tasks", icon: ListTodo },
     { name: "Learning Materials", href: "/admin/materials", icon: BookOpen },
     { name: "Students & Cohort", href: "/admin/students", icon: Users },
+    { name: "Kicked Students", href: "/admin/students/kicked", icon: ShieldAlert },
     { name: "Groups & Mentors", href: "/admin/groups", icon: UserPlus },
     { name: "Announcements", href: "/admin/announcements", icon: Megaphone },
   ];

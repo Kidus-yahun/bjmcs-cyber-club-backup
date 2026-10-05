@@ -139,3 +139,69 @@ BJMCS Cyber Club Team
     };
   }
 }
+
+export async function sendApplicationUpdateEmail(
+  to: string,
+  name: string,
+  reference: string
+): Promise<SendEmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    const errorMsg = "RESEND_API_KEY is not configured in the environment.";
+    console.error(`[EMAIL SERVICE ERROR] ${errorMsg}`);
+    return { success: false, error: errorMsg };
+  }
+
+  try {
+    const resend = new Resend(apiKey);
+    const subject = "An update about your BJMCS Cyber Club application";
+    const text = `Dear ${name},
+
+Thank you for applying to the BJMCS Cyber Club. We appreciate the time and care you put into your application (reference: ${reference}).
+
+After reviewing applications for this intake, we are unable to offer you a place at this time. The number of places is limited, and this decision is not a reflection of your potential or a failure. We encourage you to continue learning and to apply again in a future intake.
+
+Thank you again for your interest in the BJMCS Cyber Club.
+
+Best regards,
+BJMCS Cyber Club Team`;
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; color: #333; line-height: 1.6;">
+        <p>Dear ${name},</p>
+        <p>Thank you for applying to the <strong>BJMCS Cyber Club</strong>. We appreciate the time and care you put into your application.</p>
+        <p><strong>Application reference:</strong> ${reference}</p>
+        <p>After reviewing applications for this intake, we are unable to offer you a place at this time. The number of places is limited, and this decision is not a reflection of your potential or a failure. We encourage you to continue learning and to apply again in a future intake.</p>
+        <p>Thank you again for your interest in the BJMCS Cyber Club.</p>
+        <p>Best regards,<br/>BJMCS Cyber Club Team</p>
+      </div>
+    `;
+
+    const { data, error } = await resend.emails.send({
+      from: "BJMCS Cyber Club <noreply@bjmcs-cyber.bbroot.com>",
+      to,
+      subject,
+      text,
+      html,
+    });
+
+    if (error) {
+      console.error("[EMAIL SERVICE ERROR] Resend rejected the application update email", {
+        to,
+        subject,
+        error,
+        statusCode: (error as { statusCode?: number })?.statusCode,
+        body: (error as { body?: unknown })?.body,
+      });
+      return { success: false, error: (error as { message?: string })?.message || "Resend rejected the email request." };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (error: unknown) {
+    console.error("[EMAIL SERVICE ERROR] Failed to send application update email:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred while sending email",
+    };
+  }
+}

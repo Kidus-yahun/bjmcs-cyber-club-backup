@@ -26,6 +26,10 @@ model Application {
   emailAttemptedAt     DateTime?
   emailSentAt          DateTime?
   emailError           String?
+  applicationUpdateEmailStatus        SelectionEmailStatus @default(NOT_SENT)
+  applicationUpdateEmailAttemptedAt   DateTime?
+  applicationUpdateEmailSentAt        DateTime?
+  applicationUpdateEmailError         String?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   fullName             String
@@ -33,6 +37,7 @@ model Application {
   gender               String
   phone                String
   email                String
+  telegramUsername     String?
   grade                String
   section              String
   hasStudiedCyber      Boolean
@@ -93,6 +98,8 @@ model Student {
   email               String                   @unique
   passwordHash        String?
   isActive            Boolean                  @default(false)
+  kickedAt            DateTime?
+  kickedReason        String?
   activationToken     String?                  @unique
   activationExpires   DateTime?
   lastLoginAt         DateTime?

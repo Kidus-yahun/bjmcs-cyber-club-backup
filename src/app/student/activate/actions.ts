@@ -12,7 +12,7 @@ export async function activateAccount(token: string, password: string) {
       where: { activationToken: token }
     });
 
-    if (!student || (student.activationExpires && student.activationExpires < new Date())) {
+    if (!student || student.kickedAt || (student.activationExpires && student.activationExpires < new Date())) {
       return { error: "Invalid or expired activation token." };
     }
 

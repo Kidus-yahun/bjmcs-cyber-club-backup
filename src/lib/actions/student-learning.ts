@@ -12,6 +12,13 @@ async function getStudentSession() {
   if (!payload || payload.role !== "STUDENT" || !payload.studentId) {
     throw new Error("Unauthorized");
   }
+
+  const student = await db.student.findUnique({
+    where: { id: payload.studentId },
+    select: { isActive: true, kickedAt: true },
+  });
+  if (!student?.isActive || student.kickedAt) throw new Error("Unauthorized");
+
   return payload.studentId;
 }
 

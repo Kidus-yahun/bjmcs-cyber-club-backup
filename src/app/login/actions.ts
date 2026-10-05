@@ -61,11 +61,17 @@ export async function loginAction(formData: FormData) {
     });
 
     if (studentUser) {
-      if (!studentUser.isActive) {
-        return { error: "Account is not active." };
-      }
       if (!studentUser.passwordHash || !verifyPassword(password, studentUser.passwordHash)) {
         return { error: "Invalid credentials." };
+      }
+      if (studentUser.kickedAt) {
+        return {
+          blocked: true,
+          error: "Your Cyber Club account has been deactivated by an administrator. Please contact the Cyber Club administrators if you believe this was a mistake.",
+        };
+      }
+      if (!studentUser.isActive) {
+        return { error: "Account is not active." };
       }
 
       const token = await signJwt({ studentId: studentUser.id, email: studentUser.email, role: "STUDENT" });
