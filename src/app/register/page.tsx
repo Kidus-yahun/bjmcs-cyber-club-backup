@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import { db } from "@/lib/db";
 import { RegistrationForm } from "./_components/RegistrationForm";
-import { Card, CardContent, CardHeader, CardTitle, Alert } from "@/components/ui";
 import { siteConfig } from "@/config/site";
+import { AlertCircle, Lock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Register",
+  title: "Candidate Application",
   description: "Apply to join the BGMCS Cyber Club",
 };
 
@@ -23,49 +23,48 @@ export default async function RegisterPage() {
 
   const isOpen = settings?.isOpen ?? false;
   const isPastDeadline = settings?.deadline ? new Date() > settings?.deadline : false;
-
   const isClosed = !isOpen || isPastDeadline;
 
   return (
-    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-[#0a1628] selection:bg-blue-500/30">
-      <div className="max-w-4xl mx-auto mb-12 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl lg:text-6xl mb-6">
-          Apply to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">{settings?.clubDisplayName || siteConfig.name}</span>
+    <div className="min-h-screen py-14 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#090a0d] text-[#f4f3ee]">
+      {/* Editorial Page Masthead */}
+      <div className="max-w-4xl mx-auto mb-10 text-center space-y-4">
+        <div className="inline-flex items-center gap-2 border border-[#23262d] bg-[#111317] px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#828792]">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#ff3700] animate-pulse" />
+          <span>RECRUITMENT DOSSIER</span>
+          <span className="text-[#3a3f4a]">&bull;</span>
+          <span className="text-[#f4f3ee]">COHORT 2026/27</span>
+        </div>
+
+        <h1 className="font-serif-display italic text-5xl sm:text-6xl lg:text-7xl text-[#f4f3ee] tracking-tight">
+          Apply to{" "}
+          <span className="font-sans font-black uppercase text-[#ff3700] not-italic block mt-1">
+            BGMCS Cyber Club
+          </span>
         </h1>
-        <p className="mt-4 text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto font-light">
-          We are looking for passionate students ready to explore the world of cybersecurity. Join our elite academy of future defenders.
+
+        <p className="font-sans text-sm sm:text-base text-[#828792] max-w-2xl mx-auto leading-relaxed">
+          We look for analytical stamina, intellectual honesty, and genuine passion for computer systems. Complete your candidate application below for admission into the BGMCS research laboratory.
         </p>
       </div>
 
       {isClosed ? (
-        <Card className="max-w-2xl mx-auto text-center border-slate-200 dark:border-slate-800/60 shadow-xl dark:shadow-blue-900/10 bg-white dark:bg-slate-900/50 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <div className="mx-auto w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-              {isPastDeadline ? (
-                <svg className="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-              ) : (
-                <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              )}
-            </div>
-            <CardTitle className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              {isPastDeadline ? "Registration Deadline Passed" : "Registration Closed"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-8">
-            {isPastDeadline ? (
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                The application deadline for this registration period has passed. We are currently reviewing the submitted applications.
-              </p>
-            ) : (
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                Registration is currently unavailable. We open applications during specific enrollment windows. Please check back later.
-              </p>
-            )}
-            <div className="inline-flex items-center justify-center px-6 py-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/50 text-sm font-medium text-slate-600 dark:text-slate-300">
-              Thank you to everyone who applied!
-            </div>
-          </CardContent>
-        </Card>
+        <div className="max-w-2xl mx-auto border border-[#23262d] bg-[#0c0e12] p-8 sm:p-12 text-center font-mono">
+          <div className="mx-auto w-12 h-12 mb-6 flex items-center justify-center border border-[#ff3700] bg-[#ff3700]/10 text-[#ff3700]">
+            <Lock className="w-6 h-6" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-wider text-[#f4f3ee] mb-3">
+            {isPastDeadline ? "Application Deadline Expired" : "Admissions Cycle Sealed"}
+          </h2>
+          <p className="text-xs text-[#828792] leading-relaxed max-w-md mx-auto mb-6">
+            {isPastDeadline
+              ? "The submission window for the current cohort has officially closed. Applications are undergoing faculty review."
+              : "Registration is not currently accepting incoming cadet dossiers. Announcements for future intakes will be dispatched via official channels."}
+          </p>
+          <div className="inline-block border border-[#23262d] bg-[#111317] px-5 py-2 text-xs text-[#828792]">
+            STATUS: QUEUED FOR NEXT INTAKE CYCLE
+          </div>
+        </div>
       ) : (
         <div className="max-w-4xl mx-auto">
           <RegistrationForm />

@@ -4,6 +4,8 @@ import { verifyJwt } from "@/lib/auth";
 import { db } from "@/lib/db";
 import UnifiedLoginForm from "./UnifiedLoginForm";
 import Link from "next/link";
+import { Terminal, Shield, ArrowUpRight, Lock } from "lucide-react";
+import { siteConfig } from "@/config/site";
 
 export const dynamic = "force-dynamic";
 
@@ -25,75 +27,104 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Left Half - Branding & Aesthetic */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#0a1628] flex-col justify-between overflow-hidden">
-        {/* Background Tech Pattern */}
-        <div className="absolute inset-0 z-0 opacity-10">
-          <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="login-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#22d3ee" strokeWidth="1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#login-grid)" />
-          </svg>
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#0a1628] to-transparent" />
+    <div className="flex min-h-screen bg-[#090a0d] text-[#f4f3ee]">
+      {/* Left Column - Editorial Intelligence & Spec (Hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#060709] border-r border-[#23262d] flex-col justify-between p-12 xl:p-16">
+        <div>
+          <Link href="/" className="inline-flex items-center gap-3 group text-[#f4f3ee] hover:text-[#ff3700] transition-colors">
+            <div className="flex h-8 w-8 items-center justify-center border border-[#ff3700] bg-[#ff3700]/10 text-[#ff3700] font-mono text-xs font-bold">
+              G
+            </div>
+            <div className="flex flex-col">
+              <span className="font-mono text-sm font-semibold tracking-wider uppercase">
+                {siteConfig.name}
+              </span>
+              <span className="font-mono text-[10px] text-[#828792] tracking-widest uppercase">
+                CONSOLE DISPATCH // TERMINAL GATEWAY
+              </span>
+            </div>
+          </Link>
         </div>
 
-        <div className="relative z-10 p-12 flex flex-col h-full">
-          <div>
-            <Link href="/" className="inline-flex items-center gap-3 group">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-all duration-300">
-                <ShieldIcon className="h-6 w-6 text-[#22d3ee]" />
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-white">BGMCS Cyber Club</span>
-            </Link>
-          </div>
+        {/* Central Editorial Statement */}
+        <div className="max-w-lg space-y-6 my-auto py-12">
+          <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block">
+            // OPERATIONAL DIRECTIVE
+          </span>
+          <blockquote className="font-serif-display italic text-4xl xl:text-5xl text-[#f4f3ee] leading-tight">
+            &ldquo;Security is a disciplined habit of continuous inquiry, not a static compliance checkpoint.&rdquo;
+          </blockquote>
+          <footer className="font-mono text-xs text-[#828792] pt-4 border-t border-[#1b1e25]">
+            &mdash; BGMCS Academy Directorate // Node 01
+          </footer>
 
-          <div className="mt-auto max-w-md">
-            <blockquote className="space-y-6">
-              <p className="text-2xl font-medium text-white leading-snug">
-                "Security is a state of mind, not an end state. We build the defenders of tomorrow by challenging the boundaries of today."
-              </p>
-              <footer className="text-sm font-semibold text-[#ff3b00] font-mono">
-                — BGMCS Academy Director
-              </footer>
-            </blockquote>
+          {/* Terminal telemetry docket */}
+          <div className="p-4 border border-[#23262d] bg-[#0c0e12] font-mono text-[11px] space-y-2 mt-8">
+            <div className="text-[#ff3700] font-bold">// ACCESS PARAMETERS</div>
+            <div className="text-[#828792] flex justify-between">
+              <span>CLEARANCE ROLES:</span>
+              <span className="text-[#f4f3ee]">ADMIN &bull; MENTOR &bull; CADET</span>
+            </div>
+            <div className="text-[#828792] flex justify-between">
+              <span>SESSION PROTOCOL:</span>
+              <span className="text-[#f4f3ee]">HTTP-ONLY &bull; SHA-256 HMAC</span>
+            </div>
+            <div className="text-[#828792] flex justify-between">
+              <span>ACCESS POLICY:</span>
+              <span className="text-[#f4f3ee]">MONITORED FOR DEFENSE LABS</span>
+            </div>
           </div>
+        </div>
+
+        {/* Bottom Metadata */}
+        <div className="font-mono text-[11px] text-[#525866] flex items-center justify-between pt-6 border-t border-[#1b1e25]">
+          <span>STATUS: AUTH_DAEMON_ONLINE</span>
+          <span>LAT: 11.59 // LON: 37.38</span>
         </div>
       </div>
 
-      {/* Right Half - Login Form */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 sm:p-12 xl:p-24 bg-white dark:bg-slate-900">
+      {/* Right Column - Utilitarian Console Form */}
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-6 sm:p-12 xl:p-20 bg-[#090a0d]">
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center lg:text-left">
-            <div className="lg:hidden mb-8 flex justify-center">
-               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-800">
-                 <ShieldIcon className="h-8 w-8 text-[#22d3ee]" />
-               </div>
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Welcome back
-            </h1>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-              Sign in to access your portal, labs, and resources.
-            </p>
-          </div>
           
-          <div className="mt-8 bg-slate-50 dark:bg-slate-800/50 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          {/* Mobile Header */}
+          <div className="lg:hidden text-center space-y-3">
+            <Link href="/" className="inline-flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center border border-[#ff3700] bg-[#ff3700]/10 text-[#ff3700] font-mono text-xs font-bold">
+                G
+              </div>
+              <span className="font-mono text-sm font-bold uppercase tracking-wider text-[#f4f3ee]">
+                {siteConfig.name}
+              </span>
+            </Link>
+          </div>
+
+          <div className="border border-[#23262d] bg-[#0c0e12] p-8 sm:p-10 shadow-2xl">
+            <div className="mb-6 space-y-2">
+              <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block">
+                // AUTHENTICATION PROTOCOL
+              </span>
+              <h1 className="font-serif-display italic text-3xl sm:text-4xl text-[#f4f3ee]">
+                Member Console <span className="font-sans font-black uppercase text-[#ff3700] not-italic">Login</span>
+              </h1>
+              <p className="font-sans text-xs sm:text-sm text-[#828792] leading-relaxed">
+                Enter your student identifier, registered email, or administrator credentials.
+              </p>
+            </div>
+
             <UnifiedLoginForm blocked={blocked === "1"} />
+
+            {/* Bottom Redirect */}
+            <div className="mt-8 pt-6 border-t border-[#1b1e25] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs text-[#828792]">
+              <span>Not registered yet?</span>
+              <Link href="/register" className="text-[#ff3700] hover:underline flex items-center gap-1 font-bold">
+                <span>Apply for Cadet Intake</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-function ShieldIcon({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
   );
 }

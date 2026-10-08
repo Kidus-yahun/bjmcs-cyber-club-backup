@@ -2,9 +2,9 @@
 
 import { useRef, useState } from "react";
 import { submitRegistration } from "../actions";
-import { Button, Input, Alert, Card, CardContent } from "@/components/ui";
 import { ProgrammingExperience, WeeklyAvailability } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import { Check, ArrowRight, ArrowLeft, ShieldAlert, CheckCircle2, Copy } from "lucide-react";
 
 const STEPS = ["Identity", "School", "Tech", "Motivation", "Terms", "Review"];
 
@@ -18,29 +18,12 @@ function reviewValue(value: unknown): string {
 
 function ReviewRow({ label, value }: { label: string; value: unknown }) {
   return (
-    <div className="border-b border-slate-100 py-3 last:border-0 dark:border-slate-800">
-      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</dt>
-      <dd className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-800 dark:text-slate-200">{reviewValue(value)}</dd>
+    <div className="border-b border-[#1b1e25] py-3 last:border-0">
+      <dt className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#828792]">{label}</dt>
+      <dd className="mt-1 font-mono text-xs whitespace-pre-wrap break-words text-[#f4f3ee]">{reviewValue(value)}</dd>
     </div>
   );
 }
-
-// Inline SVGs
-const CheckIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-);
-
-const ShieldCheckIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-);
-
-const ArrowRightIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-);
-
-const ArrowLeftIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-);
 
 function toggleChoice(current: string[], choice: string): string[] {
   if (choice === "None") return current.includes("None") ? [] : ["None"];
@@ -55,6 +38,7 @@ export function RegistrationForm() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const submissionStarted = useRef(false);
 
   const [formData, setFormData] = useState<any>({
@@ -80,7 +64,7 @@ export function RegistrationForm() {
     projects: [],
     additional: { additionalSkills: "", howHeardAboutUs: "" },
     terms: {
-    agreedToAccuracy: false,
+      agreedToAccuracy: false,
       agreedToRules: false,
       agreedToLegal: false,
       agreedToNoGuarantee: false,
@@ -93,16 +77,18 @@ export function RegistrationForm() {
     e.preventDefault();
     if (step < 4) {
       setStep(s => s + 1);
+      window.scrollTo({ top: 120, behavior: "smooth" });
       return;
     }
 
     if (step === 4) {
       if (!formData.terms.agreedToAccuracy) {
-        setError("Please read the policies and select I agree before continuing.");
+        setError("Please review and accept the ethics and lab terms before continuing.");
         return;
       }
       setError(null);
       setStep(5);
+      window.scrollTo({ top: 120, behavior: "smooth" });
       return;
     }
 
@@ -120,159 +106,257 @@ export function RegistrationForm() {
         setError(result.error || "Submission failed.");
       }
     } catch (err: any) {
-      setError("An unexpected error occurred.");
+      setError("An unexpected error occurred during submission.");
     } finally {
       setIsPending(false);
       submissionStarted.current = false;
     }
   };
 
-  const handleBack = () => setStep(s => Math.max(0, s - 1));
+  const handleBack = () => {
+    setStep(s => Math.max(0, s - 1));
+    window.scrollTo({ top: 120, behavior: "smooth" });
+  };
+
+  const handleCopyReference = () => {
+    if (success) {
+      navigator.clipboard.writeText(success);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   if (success) {
     return (
-      <Card className="max-w-2xl mx-auto border-emerald-500/30 dark:border-emerald-500/20 shadow-2xl shadow-emerald-500/10 bg-white dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden">
-        <div className="h-2 w-full bg-gradient-to-r from-emerald-400 to-cyan-500" />
-        <CardContent className="pt-10 pb-12 px-8 text-center space-y-6">
-          <div className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-emerald-50 dark:ring-emerald-900/10">
-            <ShieldCheckIcon className="w-12 h-12" />
+      <div className="max-w-2xl mx-auto border-2 border-[#ff3700] bg-[#0c0e12] p-8 sm:p-12 text-[#f4f3ee] font-mono shadow-2xl">
+        <div className="flex items-center gap-2 text-[#ff3700] text-xs font-bold uppercase tracking-wider mb-4">
+          <CheckCircle2 className="w-5 h-5" />
+          <span>APPLICATION DOSSIER LODGED // STATUS: QUEUED</span>
+        </div>
+
+        <h2 className="font-serif-display italic text-3xl sm:text-4xl text-[#f4f3ee] mb-3">
+          Submission Confirmed
+        </h2>
+
+        <p className="font-sans text-sm text-[#828792] leading-relaxed mb-6">
+          Your cadet application has been filed in the BGMCS admissions registry. Retain your unique tracking identifier for account activation and interview verification.
+        </p>
+
+        <div className="p-5 border border-[#23262d] bg-[#07080b] flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <div>
+            <span className="text-[10px] text-[#828792] uppercase block tracking-wider">OFFICIAL REFERENCE NUMBER</span>
+            <span className="text-xl sm:text-2xl font-bold text-[#ff3700] tracking-widest">{success}</span>
           </div>
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Application Submitted Successfully</h2>
-          <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Application / Reference ID</p>
-          <div className="py-6 px-4 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner my-8">
-            <p className="text-4xl sm:text-5xl font-mono font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-              {success}
-            </p>
-          </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-            Your application has been received and will be reviewed. We will notify you by email whether you are selected. Submitting an application does not mean you have been accepted.
+          <button
+            type="button"
+            onClick={handleCopyReference}
+            className="inline-flex items-center gap-2 border border-[#23262d] bg-[#111317] px-4 py-2 text-xs font-bold uppercase text-[#f4f3ee] hover:border-[#ff3700] transition-colors"
+          >
+            <Copy className="w-3.5 h-3.5" />
+            <span>{copied ? "COPIED" : "COPY CODE"}</span>
+          </button>
+        </div>
+
+        <div className="border-t border-[#1b1e25] pt-6 space-y-3 text-xs text-[#828792]">
+          <div className="text-[#f4f3ee] font-bold uppercase">// NEXT PROTOCOL</div>
+          <p className="leading-relaxed">
+            1. An automated confirmation dispatch has been routed to your email address: <strong className="text-[#f4f3ee]">{formData.identity.email}</strong>.
           </p>
-        </CardContent>
-      </Card>
+          <p className="leading-relaxed">
+            2. The technical review committee reviews applications on a rolling basis. You will receive an invitation to join the onboarding challenge via email &amp; Telegram.
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="max-w-4xl mx-auto border-slate-200 dark:border-slate-800/60 shadow-xl dark:shadow-blue-900/10 bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300">
-      <div className="px-6 py-8 sm:p-10 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
-          <div className="w-full relative flex items-center justify-between">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-blue-600 dark:bg-blue-500 transition-all duration-500 ease-in-out"
-                style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }}
-              />
-            </div>
-            {STEPS.map((s, i) => {
-              const isCompleted = i < step;
-              const isActive = i === step;
-              
-              return (
-                <div key={s} className="relative z-10 flex flex-col items-center group">
-                  <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 border-2",
-                    isCompleted ? "bg-blue-600 border-blue-600 text-white dark:bg-blue-500 dark:border-blue-500" : 
-                    isActive ? "bg-white border-blue-600 text-blue-600 dark:bg-slate-900 dark:border-blue-500 dark:text-blue-400 ring-4 ring-blue-100 dark:ring-blue-900/30" : 
-                    "bg-white border-slate-300 text-slate-400 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-500"
-                  )}>
-                    {isCompleted ? <CheckIcon className="w-5 h-5" /> : i + 1}
-                  </div>
+    <div className="border border-[#23262d] bg-[#0c0e12] text-[#f4f3ee] shadow-2xl">
+      {/* Bespoke Segmented Technical Progress Ledger */}
+      <div className="border-b border-[#23262d] bg-[#08090c]">
+        <div className="grid grid-cols-3 sm:grid-cols-6 divide-x divide-y sm:divide-y-0 divide-[#23262d] font-mono text-[11px]">
+          {STEPS.map((stepName, i) => {
+            const isCompleted = i < step;
+            const isActive = i === step;
+            
+            return (
+              <div
+                key={stepName}
+                className={cn(
+                  "p-3 sm:p-3.5 flex items-center justify-between transition-colors",
+                  isActive
+                    ? "bg-[#14171e] text-[#f4f3ee] border-b-2 sm:border-b-0 sm:border-t-2 border-[#ff3700]"
+                    : isCompleted
+                    ? "bg-[#0c0e12] text-[#828792]"
+                    : "text-[#4b5160] bg-[#08090c]"
+                )}
+              >
+                <div className="flex items-center gap-1.5 truncate">
                   <span className={cn(
-                    "absolute -bottom-6 text-xs font-medium whitespace-nowrap transition-colors duration-200",
-                    isCompleted || isActive ? "text-slate-900 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"
+                    "font-bold",
+                    isActive ? "text-[#ff3700]" : isCompleted ? "text-[#828792]" : "text-[#3a3f4a]"
                   )}>
-                    {s}
+                    0{i + 1}.
+                  </span>
+                  <span className="uppercase tracking-wider truncate font-semibold">
+                    {stepName}
                   </span>
                 </div>
-              );
-            })}
-          </div>
+                {isCompleted && (
+                  <Check className="w-3.5 h-3.5 text-[#ff3700] flex-shrink-0 ml-1" />
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <CardContent className="p-6 sm:p-10 pt-12 sm:pt-14">
-        {error && <Alert variant="error" title="Error" className="mb-8">{error}</Alert>}
+      {/* Main Form Body */}
+      <div className="p-6 sm:p-10 lg:p-12">
+        {error && (
+          <div className="mb-8 border border-red-500/40 bg-red-950/20 p-4 font-mono text-xs text-red-400 flex items-start gap-3">
+            <ShieldAlert className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="font-bold block uppercase tracking-wider mb-0.5">VALIDATION WARNING</span>
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* STEP 0: IDENTITY */}
           {step === 0 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Identity Details</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Please provide your personal contact information.</p>
+            <div className="space-y-6">
+              <div className="border-b border-[#23262d] pb-4">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+                  // 01. CANDIDATE PROFILE &amp; TELEMETRY
+                </span>
+                <h2 className="font-serif-display italic text-2xl sm:text-3xl text-[#f4f3ee]">
+                  Identity &amp; Contact Coordinates
+                </h2>
+                <p className="font-sans text-xs sm:text-sm text-[#828792] mt-1">
+                  Ensure all communication coordinates are valid for verification dispatches.
+                </p>
               </div>
-              
+
               <div className="space-y-5">
-                <Input 
-                  label="Full Name" 
-                  placeholder="John Doe"
-                  required 
-                  value={formData.identity.fullName} 
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((p: any) => ({...p, identity: {...p.identity, fullName: e.target.value}}))} 
-                  className="bg-white dark:bg-slate-950"
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Input 
-                    label="Email Address" 
-                    placeholder="john@example.com"
-                    type="email" 
-                    required 
-                    value={formData.identity.email} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((p: any) => ({...p, identity: {...p.identity, email: e.target.value}}))} 
-                    className="bg-white dark:bg-slate-950"
-                  />
-                  <Input 
-                    label="Phone Number" 
-                    placeholder="+1 (555) 000-0000"
-                    type="tel" 
-                    required 
-                    value={formData.identity.phone} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((p: any) => ({...p, identity: {...p.identity, phone: e.target.value}}))} 
-                    className="bg-white dark:bg-slate-950"
+                <div className="space-y-1.5">
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Full Legal Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Dawit Haile"
+                    value={formData.identity.fullName}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, identity: { ...p.identity, fullName: e.target.value } }))}
+                    className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] placeholder-[#4b5160] focus:border-[#ff3700] focus:outline-none transition-colors"
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Input 
-                    label="Age" 
-                    type="number" 
-                    min={10} 
-                    max={30} 
-                    required 
-                    value={formData.identity.age} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((p: any) => ({...p, identity: {...p.identity, age: parseInt(e.target.value)}}))} 
-                    className="bg-white dark:bg-slate-950"
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Gender</label>
-                    <select 
-                      required 
-                      className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:ring-offset-slate-950 dark:focus-visible:ring-blue-500" 
-                      value={formData.identity.gender} 
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData((p: any) => ({...p, identity: {...p.identity, gender: e.target.value}}))}
+                    <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="cadet@example.com"
+                      value={formData.identity.email}
+                      onChange={(e) => setFormData((p: any) => ({ ...p, identity: { ...p.identity, email: e.target.value } }))}
+                      className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] placeholder-[#4b5160] focus:border-[#ff3700] focus:outline-none transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+251 90 000 0000"
+                      value={formData.identity.phone}
+                      onChange={(e) => setFormData((p: any) => ({ ...p, identity: { ...p.identity, phone: e.target.value } }))}
+                      className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] placeholder-[#4b5160] focus:border-[#ff3700] focus:outline-none transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                      Age *
+                    </label>
+                    <input
+                      type="number"
+                      min={10}
+                      max={35}
+                      required
+                      value={formData.identity.age}
+                      onChange={(e) => setFormData((p: any) => ({ ...p, identity: { ...p.identity, age: parseInt(e.target.value) || 0 } }))}
+                      className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] placeholder-[#4b5160] focus:border-[#ff3700] focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                      Gender *
+                    </label>
+                    <select
+                      required
+                      value={formData.identity.gender}
+                      onChange={(e) => setFormData((p: any) => ({ ...p, identity: { ...p.identity, gender: e.target.value } }))}
+                      className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none transition-colors"
                     >
                       <option value="" disabled>Select gender...</option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                     </select>
                   </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                      Telegram Username *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="@handle"
+                      value={formData.identity.telegramUsername}
+                      onChange={(e) => setFormData((p: any) => ({ ...p, identity: { ...p.identity, telegramUsername: e.target.value } }))}
+                      className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] placeholder-[#4b5160] focus:border-[#ff3700] focus:outline-none transition-colors"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
+          {/* STEP 1: SCHOOL */}
           {step === 1 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">School Information</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Tell us about your current academic standing.</p>
+            <div className="space-y-6">
+              <div className="border-b border-[#23262d] pb-4">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+                  // 02. ACADEMIC DIVISION &amp; ARTIFACTS
+                </span>
+                <h2 className="font-serif-display italic text-2xl sm:text-3xl text-[#f4f3ee]">
+                  Current Academic Cohort
+                </h2>
+                <p className="font-sans text-xs sm:text-sm text-[#828792] mt-1">
+                  Input your class division and any prior software artifacts or repositories.
+                </p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Grade Level</label>
-                  <select 
-                    className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100" 
-                    value={formData.school.grade} 
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData((p: any) => ({...p, school: {...p.school, grade: e.target.value}}))}
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Grade Level *
+                  </label>
+                  <select
+                    value={formData.school.grade}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, school: { ...p.school, grade: e.target.value } }))}
+                    className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none transition-colors"
                   >
                     <option value="9">Grade 9</option>
                     <option value="10">Grade 10</option>
@@ -280,200 +364,213 @@ export function RegistrationForm() {
                     <option value="12">Grade 12</option>
                   </select>
                 </div>
+
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Section</label>
-                  <select 
-                    className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100" 
-                    value={formData.school.section} 
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData((p: any) => ({...p, school: {...p.school, section: e.target.value}}))}
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Section *
+                  </label>
+                  <select
+                    value={formData.school.section}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, school: { ...p.school, section: e.target.value } }))}
+                    className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none transition-colors"
                   >
-                    {["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(s => <option key={s} value={s}>Section {s}</option>)}
+                    {["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(s => (
+                      <option key={s} value={s}>Section {s}</option>
+                    ))}
                   </select>
                 </div>
+              </div>
 
-                <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-4">
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100">Previous Projects (Optional)</h4>
-                  <div className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Project Title</label>
-                      <input 
-                        type="text"
-                        className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-                        value={formData.projects[0]?.projectName || ""}
-                        onChange={(e) => {
-                          const newProjects = [...(formData.projects.length ? formData.projects : [{}])];
-                          newProjects[0].projectName = e.target.value;
-                          setFormData((p: any) => ({...p, projects: newProjects}));
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Project Links (Comma separated)</label>
-                      <input 
-                        type="text"
-                        placeholder="https://github.com/..., https://..."
-                        className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-                        value={(formData.projects[0]?.links || []).join(", ")}
-                        onChange={(e) => {
-                          const newProjects = [...(formData.projects.length ? formData.projects : [{}])];
-                          newProjects[0].links = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
-                          setFormData((p: any) => ({...p, projects: newProjects}));
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Input
-                        label="Telegram Username"
-                        placeholder="@yourusername"
-                        required
-                        value={formData.identity.telegramUsername}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((p: any) => ({ ...p, identity: { ...p.identity, telegramUsername: e.target.value } }))}
-                        className="bg-white dark:bg-slate-950"
-                      />
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Please make sure this Telegram account can be contacted.</p>
-                    </div>
+              {/* Optional Project Specimen */}
+              <div className="border border-[#23262d] bg-[#090b0e] p-6 space-y-4">
+                <div className="flex items-center justify-between font-mono text-xs">
+                  <span className="text-[#ff3700] font-bold">// TECHNICAL SPECIMEN (OPTIONAL)</span>
+                  <span className="text-[#525866]">CODE REPOSITORIES / WRITE-UPS</span>
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                      Project or Tool Title
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Port Scanner, Keylogger Analyzer, Web App"
+                      value={formData.projects[0]?.projectName || ""}
+                      onChange={(e) => {
+                        const newProjects = [...(formData.projects.length ? formData.projects : [{}])];
+                        newProjects[0].projectName = e.target.value;
+                        setFormData((p: any) => ({ ...p, projects: newProjects }));
+                      }}
+                      className="w-full border border-[#23262d] bg-[#07080b] px-4 py-2.5 font-sans text-sm text-[#f4f3ee] placeholder-[#4b5160] focus:border-[#ff3700] focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                      Repository or Demo Links
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://github.com/yourname/tool"
+                      value={(formData.projects[0]?.links || []).join(", ")}
+                      onChange={(e) => {
+                        const newProjects = [...(formData.projects.length ? formData.projects : [{}])];
+                        newProjects[0].links = e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean);
+                        setFormData((p: any) => ({ ...p, projects: newProjects }));
+                      }}
+                      className="w-full border border-[#23262d] bg-[#07080b] px-4 py-2.5 font-sans text-sm text-[#f4f3ee] placeholder-[#4b5160] focus:border-[#ff3700] focus:outline-none"
+                    />
                   </div>
                 </div>
-
               </div>
             </div>
           )}
 
+          {/* STEP 2: TECH BACKGROUND */}
           {step === 2 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Technical Background</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Help us understand your current technical proficiency.</p>
+            <div className="space-y-6">
+              <div className="border-b border-[#23262d] pb-4">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+                  // 03. TECHNICAL CAPABILITIES &amp; ENVIRONMENT
+                </span>
+                <h2 className="font-serif-display italic text-2xl sm:text-3xl text-[#f4f3ee]">
+                  Baseline Tooling &amp; Stack
+                </h2>
+                <p className="font-sans text-xs sm:text-sm text-[#828792] mt-1">
+                  Be honest about your current level. Complete beginners are evaluated on curiosity and stamina.
+                </p>
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Programming Experience</label>
-                  <select 
-                    className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100" 
-                    value={formData.techBackground.programmingExp} 
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData((p: any) => ({...p, techBackground: {...p.techBackground, programmingExp: e.target.value}}))}
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Programming Experience Level *
+                  </label>
+                  <select
+                    value={formData.techBackground.programmingExp}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, techBackground: { ...p.techBackground, programmingExp: e.target.value } }))}
+                    className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none transition-colors"
                   >
-                    <option value="NONE">None - Complete Beginner</option>
-                    <option value="BEGINNER">Beginner - Basic scripts</option>
-                    <option value="INTERMEDIATE">Intermediate - Built some projects</option>
-                    <option value="ADVANCED">Advanced - Highly proficient</option>
+                    <option value="NONE">None &mdash; Complete Beginner (Zero Code Experience)</option>
+                    <option value="BEGINNER">Beginner &mdash; Basic logic / Simple scripts</option>
+                    <option value="INTERMEDIATE">Intermediate &mdash; Built standalone applications or tools</option>
+                    <option value="ADVANCED">Advanced &mdash; Fluent in systems/assembly or low-level programming</option>
                   </select>
                 </div>
 
-                <fieldset className="space-y-3">
-                  <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Programming Languages</legend>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {["Python", "C", "C++", "Java", "JavaScript", "TypeScript", "Bash", "PowerShell", "Other", "None"].map((language) => (
-                      <label key={language} className="flex min-h-11 items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900/60">
-                        <input
-                          type="checkbox"
-                          checked={formData.techBackground.programmingLangs.includes(language)}
-                          onChange={() => setFormData((previous: any) => {
-                            const programmingLangs = toggleChoice(previous.techBackground.programmingLangs, language);
+                {/* Languages Toggle Grid */}
+                <div className="space-y-2">
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Languages Familiar With (Select all that apply)
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {["Python", "C", "C++", "Java", "JavaScript", "TypeScript", "Bash", "PowerShell", "Other", "None"].map((lang) => {
+                      const isSelected = formData.techBackground.programmingLangs.includes(lang);
+                      return (
+                        <button
+                          key={lang}
+                          type="button"
+                          onClick={() => setFormData((prev: any) => {
+                            const programmingLangs = toggleChoice(prev.techBackground.programmingLangs, lang);
                             return {
-                              ...previous,
+                              ...prev,
                               techBackground: {
-                                ...previous.techBackground,
+                                ...prev.techBackground,
                                 programmingLangs,
-                                programmingLanguageOther: programmingLangs.includes("Other") ? previous.techBackground.programmingLanguageOther : "",
+                                programmingLanguageOther: programmingLangs.includes("Other") ? prev.techBackground.programmingLanguageOther : "",
                               },
                             };
                           })}
-                          className="h-4 w-4 accent-blue-600"
-                        />
-                        <span>{language}</span>
-                      </label>
-                    ))}
+                          className={cn(
+                            "p-2.5 font-mono text-xs text-left border transition-all flex items-center justify-between",
+                            isSelected
+                              ? "border-[#ff3700] bg-[#ff3700]/10 text-[#f4f3ee] font-bold"
+                              : "border-[#23262d] bg-[#07080b] text-[#828792] hover:border-[#828792]"
+                          )}
+                        >
+                          <span>{lang}</span>
+                          {isSelected && <span className="text-[#ff3700]">&bull;</span>}
+                        </button>
+                      );
+                    })}
                   </div>
                   {formData.techBackground.programmingLangs.includes("Other") && (
-                    <Input
-                      label="Specify other programming language(s)"
-                      placeholder="For example: Go, Rust"
+                    <input
+                      type="text"
+                      placeholder="Specify other languages (e.g. Rust, Go, Zig)..."
                       required
                       value={formData.techBackground.programmingLanguageOther}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((previous: any) => ({
-                        ...previous,
-                        techBackground: { ...previous.techBackground, programmingLanguageOther: e.target.value },
+                      onChange={(e) => setFormData((prev: any) => ({
+                        ...prev,
+                        techBackground: { ...prev.techBackground, programmingLanguageOther: e.target.value }
                       }))}
-                      className="bg-white dark:bg-slate-950"
+                      className="w-full mt-2 border border-[#23262d] bg-[#07080b] px-4 py-2 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none"
                     />
                   )}
-                </fieldset>
+                </div>
 
-                <fieldset className="space-y-3">
-                  <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Operating Systems</legend>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {["Windows", "Linux", "macOS", "Other"].map((operatingSystem) => (
-                      <label key={operatingSystem} className="flex min-h-11 items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900/60">
-                        <input
-                          type="checkbox"
-                          checked={formData.techBackground.operatingSystems.includes(operatingSystem)}
-                          onChange={() => setFormData((previous: any) => {
-                            const operatingSystems = toggleChoice(previous.techBackground.operatingSystems, operatingSystem);
+                {/* Operating Systems Toggle Grid */}
+                <div className="space-y-2">
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Primary Operating Systems
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {["Linux", "Windows", "macOS", "Other"].map((os) => {
+                      const isSelected = formData.techBackground.operatingSystems.includes(os);
+                      return (
+                        <button
+                          key={os}
+                          type="button"
+                          onClick={() => setFormData((prev: any) => {
+                            const operatingSystems = toggleChoice(prev.techBackground.operatingSystems, os);
                             return {
-                              ...previous,
+                              ...prev,
                               techBackground: {
-                                ...previous.techBackground,
+                                ...prev.techBackground,
                                 operatingSystems,
-                                operatingSystemOther: operatingSystems.includes("Other") ? previous.techBackground.operatingSystemOther : "",
+                                operatingSystemOther: operatingSystems.includes("Other") ? prev.techBackground.operatingSystemOther : "",
                               },
                             };
                           })}
-                          className="h-4 w-4 accent-blue-600"
-                        />
-                        <span>{operatingSystem}</span>
-                      </label>
-                    ))}
+                          className={cn(
+                            "p-2.5 font-mono text-xs text-left border transition-all flex items-center justify-between",
+                            isSelected
+                              ? "border-[#ff3700] bg-[#ff3700]/10 text-[#f4f3ee] font-bold"
+                              : "border-[#23262d] bg-[#07080b] text-[#828792] hover:border-[#828792]"
+                          )}
+                        >
+                          <span>{os}</span>
+                          {isSelected && <span className="text-[#ff3700]">&bull;</span>}
+                        </button>
+                      );
+                    })}
                   </div>
-                  {formData.techBackground.operatingSystems.includes("Other") && (
-                    <Input
-                      label="Specify other operating system"
-                      placeholder="For example: FreeBSD"
-                      required
-                      value={formData.techBackground.operatingSystemOther}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((previous: any) => ({
-                        ...previous,
-                        techBackground: { ...previous.techBackground, operatingSystemOther: e.target.value },
-                      }))}
-                      className="bg-white dark:bg-slate-950"
+                </div>
+
+                {/* Cyber Experience Toggle */}
+                <div className="border border-[#23262d] bg-[#07080b] p-4">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.techBackground.hasStudiedCyber}
+                      onChange={(e) => setFormData((p: any) => ({ ...p, techBackground: { ...p.techBackground, hasStudiedCyber: e.target.checked } }))}
+                      className="w-4 h-4 accent-[#ff3700]"
                     />
-                  )}
-                </fieldset>
-                
-                <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <div className="relative flex items-center">
-                      <input 
-                        type="checkbox" 
-                        className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-slate-300 checked:border-blue-600 checked:bg-blue-600 dark:border-slate-700 dark:checked:border-blue-500 dark:checked:bg-blue-500 transition-all"
-                        checked={formData.techBackground.hasStudiedCyber} 
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((p: any) => ({...p, techBackground: {...p.techBackground, hasStudiedCyber: e.target.checked}}))} 
-                      />
-                      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100">
-                        <CheckIcon className="h-3.5 w-3.5" />
-                      </div>
-                    </div>
-                    <span className="font-medium text-slate-800 dark:text-slate-200">I have studied cybersecurity before</span>
+                    <span className="font-mono text-xs uppercase tracking-wider text-[#f4f3ee]">
+                      I have conducted prior cybersecurity studies / labs
+                    </span>
                   </label>
-                  
+
                   {formData.techBackground.hasStudiedCyber && (
-                    <div className="mt-4 space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Describe your cybersecurity studies</label>
-                      <textarea 
-                        className="flex w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-                        rows={4} 
-                        placeholder="Courses taken, platforms used (e.g., TryHackMe, HackTheBox), topics covered..."
-                        value={formData.techBackground.cyberStudyDesc || ""} 
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData((p: any) => ({...p, techBackground: {...p.techBackground, cyberStudyDesc: e.target.value}}))} 
-                      />
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mt-4">Areas of Cybersecurity Interest (Comma separated)</label>
-                      <input
-                        type="text"
-                        placeholder="Ethical Hacking, Forensics..."
-                        className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 mt-1"
-                        value={formData.techBackground.cyberTopics.join(", ")}
-                        onChange={(e) => setFormData((p: any) => ({...p, techBackground: {...p.techBackground, cyberTopics: e.target.value.split(",").map(s => s.trim()).filter(Boolean)}}))}
+                    <div className="mt-4 space-y-3 pt-3 border-t border-[#1b1e25]">
+                      <label className="font-mono text-xs uppercase tracking-wider text-[#828792] block">
+                        Detail prior lab platforms or courses (e.g. TryHackMe, PortSwigger, CTFs):
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={formData.techBackground.cyberStudyDesc || ""}
+                        onChange={(e) => setFormData((p: any) => ({ ...p, techBackground: { ...p.techBackground, cyberStudyDesc: e.target.value } }))}
+                        className="w-full border border-[#23262d] bg-[#090b0e] p-3 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none"
+                        placeholder="Mention ranks, room titles, or challenge categories..."
                       />
                     </div>
                   )}
@@ -482,229 +579,245 @@ export function RegistrationForm() {
             </div>
           )}
 
+          {/* STEP 3: MOTIVATION */}
           {step === 3 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Motivation & Projects</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">We want to know what drives your interest in cybersecurity.</p>
-                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg">
-                  <p className="text-sm font-medium text-red-800 dark:text-red-400">
-                    AI-generated answers are not allowed. Applicants must provide their own original responses. Use of AI-generated or copied responses may result in disqualification.
-                  </p>
+            <div className="space-y-6">
+              <div className="border-b border-[#23262d] pb-4">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+                  // 04. PURPOSE &amp; OPERATIONAL CADENCE
+                </span>
+                <h2 className="font-serif-display italic text-2xl sm:text-3xl text-[#f4f3ee]">
+                  Candidate Motivation &amp; Integrity
+                </h2>
+                <div className="mt-3 p-3 border border-red-500/40 bg-red-950/20 font-mono text-xs text-red-300">
+                  // DIRECTIVE: AI-generated or copied answers are filtered and automatically rejected. Write candidly in your own words.
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Why do you want to join the BGMCS Cyber Club?</label>
-                  <textarea 
-                    className="flex w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 placeholder:text-slate-400" 
-                    required 
-                    minLength={10} 
-                    rows={3} 
-                    placeholder="Share your inspiration..."
-                    value={formData.motivation.motivationJoin} 
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData((p: any) => ({...p, motivation: {...p.motivation, motivationJoin: e.target.value}}))} 
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Why do you want to join the BGMCS Cyber Club? *
+                  </label>
+                  <textarea
+                    required
+                    minLength={10}
+                    rows={4}
+                    placeholder="Describe what drives your interest in systems security and defense..."
+                    value={formData.motivation.motivationJoin}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, motivation: { ...p.motivation, motivationJoin: e.target.value } }))}
+                    className="w-full border border-[#23262d] bg-[#07080b] p-4 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none"
                   />
                 </div>
-                
+
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">What do you hope to learn or achieve?</label>
-                  <textarea 
-                    className="flex w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 placeholder:text-slate-400" 
-                    required 
-                    minLength={10} 
-                    rows={3} 
-                    placeholder="Specific skills, concepts, or goals..."
-                    value={formData.motivation.motivationLearn} 
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData((p: any) => ({...p, motivation: {...p.motivation, motivationLearn: e.target.value}}))} 
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    What specific skills or concepts do you intend to master? *
+                  </label>
+                  <textarea
+                    required
+                    minLength={10}
+                    rows={4}
+                    placeholder="e.g. Reverse engineering binaries, kernel exploit defense, cryptographic protocols..."
+                    value={formData.motivation.motivationLearn}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, motivation: { ...p.motivation, motivationLearn: e.target.value } }))}
+                    className="w-full border border-[#23262d] bg-[#07080b] p-4 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none"
                   />
                 </div>
-                
-                <div className="space-y-1.5 pt-2">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Weekly Availability</label>
-                  <select 
-                    className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100" 
-                    value={formData.motivation.weeklyAvailability} 
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData((p: any) => ({...p, motivation: {...p.motivation, weeklyAvailability: e.target.value}}))}
+
+                <div className="space-y-1.5">
+                  <label className="font-mono text-xs uppercase tracking-wider text-[#a2a7b2] block">
+                    Dedicated Weekly Availability *
+                  </label>
+                  <select
+                    value={formData.motivation.weeklyAvailability}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, motivation: { ...p.motivation, weeklyAvailability: e.target.value } }))}
+                    className="w-full border border-[#23262d] bg-[#07080b] px-4 py-3 font-sans text-sm text-[#f4f3ee] focus:border-[#ff3700] focus:outline-none"
                   >
-                    <option value="LESS_THAN_2_HOURS">Less than 2 hours</option>
-                    <option value="HOURS_2_TO_4">2-4 hours</option>
-                    <option value="HOURS_4_TO_6">4-6 hours</option>
-                    <option value="MORE_THAN_6_HOURS">More than 6 hours</option>
+                    <option value="LESS_THAN_2_HOURS">Less than 2 hours (Not recommended for lab completion)</option>
+                    <option value="HOURS_2_TO_4">2 &ndash; 4 hours per week</option>
+                    <option value="HOURS_4_TO_6">4 &ndash; 6 hours per week</option>
+                    <option value="MORE_THAN_6_HOURS">6+ hours per week (Optimal for active CTF cadet)</option>
                   </select>
                 </div>
               </div>
             </div>
           )}
 
+          {/* STEP 4: TERMS & POLICIES */}
           {step === 4 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Terms & Policies</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Review the application terms, privacy information, and authorized lab-use policy.</p>
-              </div>
-              
-              <div className="space-y-3">
-                <details className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
-                  <summary className="cursor-pointer font-semibold text-slate-900 dark:text-slate-100">Application Terms</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">I confirm that the information in this application is accurate and truthful. I will follow club rules and understand that applying does not guarantee selection or admission.</p>
-                </details>
-                <details className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
-                  <summary className="cursor-pointer font-semibold text-slate-900 dark:text-slate-100">Privacy Information</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Information you provide, including contact details and academic or technical responses, will be used by the BGMCS Cyber Club administrators to review your application and, if selected, manage club participation. It will not be displayed publicly as part of the application process.</p>
-                </details>
-                <details className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
-                  <summary className="cursor-pointer font-semibold text-slate-900 dark:text-slate-100">Cybersecurity Ethics & Lab Use</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Cybersecurity activities must be lawful, ethical, and authorized. Use club labs and learning environments only as instructed; never access, test, disrupt, or collect data from systems without explicit permission. Report suspected security issues responsibly to club administrators.</p>
-                </details>
+            <div className="space-y-6">
+              <div className="border-b border-[#23262d] pb-4">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+                  // 05. AUTHORIZED LAB USE &amp; ETHICAL COMPLIANCE
+                </span>
+                <h2 className="font-serif-display italic text-2xl sm:text-3xl text-[#f4f3ee]">
+                  Operating Rules &amp; Non-Negotiables
+                </h2>
               </div>
 
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900/50 dark:bg-blue-950/20">
-                <input
-                  type="checkbox"
-                  required
-                  checked={formData.terms.agreedToAccuracy}
-                  onChange={(e) => {
-                    const agreed = e.target.checked;
-                    setFormData((previous: any) => ({
-                      ...previous,
+              <div className="space-y-4">
+                <div className="border border-[#23262d] bg-[#07080b] p-5 space-y-2">
+                  <div className="font-mono text-xs text-[#ff3700] font-bold">// 01. CODE OF DEFENSIVE ETHICS</div>
+                  <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                    Club exploit toolchains, payloads, and simulated exercises are restricted strictly to approved BGMCS virtual test ranges. Launching attacks or scans against external entities, educational institutions, or third parties without explicit authorization results in immediate expulsion and referral to disciplinary authorities.
+                  </p>
+                </div>
+
+                <div className="border border-[#23262d] bg-[#07080b] p-5 space-y-2">
+                  <div className="font-mono text-xs text-[#ff3700] font-bold">// 02. TRUTHFULNESS &amp; INTEGRITY</div>
+                  <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                    All telemetry, age credentials, and technical experience listed in this dossier must be authentic. Plagiarized write-ups or misrepresentation disqualifies the candidate permanently.
+                  </p>
+                </div>
+
+                <div className="border border-[#23262d] bg-[#07080b] p-5 space-y-2">
+                  <div className="font-mono text-xs text-[#ff3700] font-bold">// 03. PRIVACY GUARANTEE</div>
+                  <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                    Your contact information and technical assessments are accessed exclusively by BGMCS administration for cohort selection. No candidate telemetry is published or shared externally.
+                  </p>
+                </div>
+
+                <label className="flex items-start gap-3 p-4 border border-[#ff3700] bg-[#ff3700]/5 cursor-pointer mt-6">
+                  <input
+                    type="checkbox"
+                    required
+                    checked={formData.terms.agreedToAccuracy}
+                    onChange={(e) => setFormData((p: any) => ({
+                      ...p,
                       terms: {
-                        agreedToAccuracy: agreed,
-                        agreedToRules: agreed,
-                        agreedToLegal: agreed,
-                        agreedToNoGuarantee: agreed,
-                        ethicsAgreement: agreed,
-                        termsAgreement: agreed,
-                      },
-                    }));
-                  }}
-                  className="mt-0.5 h-5 w-5 accent-blue-600"
-                />
-                <span className="font-semibold text-slate-900 dark:text-slate-100">I agree</span>
-              </label>
+                        ...p.terms,
+                        agreedToAccuracy: e.target.checked,
+                        agreedToRules: e.target.checked,
+                        agreedToLegal: e.target.checked,
+                        agreedToNoGuarantee: e.target.checked,
+                        ethicsAgreement: e.target.checked,
+                        termsAgreement: e.target.checked
+                      }
+                    }))}
+                    className="w-4 h-4 accent-[#ff3700] mt-0.5"
+                  />
+                  <span className="font-mono text-xs text-[#f4f3ee] leading-relaxed font-semibold">
+                    I have read, understood, and solemnly bind myself to the BGMCS Cybersecurity Ethics Policy and Laboratory Usage Guidelines.
+                  </span>
+                </label>
+              </div>
             </div>
           )}
 
+          {/* STEP 5: REVIEW */}
           {step === 5 && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm font-semibold text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-                Please review your information carefully. After submitting, you may not be able to edit your application.
+            <div className="space-y-6">
+              <div className="border-b border-[#23262d] pb-4">
+                <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+                  // 06. DOSSIER AUDIT &amp; SUBMISSION
+                </span>
+                <h2 className="font-serif-display italic text-2xl sm:text-3xl text-[#f4f3ee]">
+                  Final Verification
+                </h2>
+                <p className="font-sans text-xs sm:text-sm text-[#828792] mt-1">
+                  Confirm all values before locking your application in the registry.
+                </p>
               </div>
 
-              <section className="rounded-lg border border-slate-200 p-5 dark:border-slate-800">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100">Identity & Contact</h3>
-                  <button type="button" onClick={() => setStep(0)} className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">Edit</button>
-                </div>
-                <dl className="mt-2 grid gap-x-6 sm:grid-cols-2">
-                  <ReviewRow label="Full name" value={formData.identity.fullName} />
-                  <ReviewRow label="Age" value={formData.identity.age} />
-                  <ReviewRow label="Gender" value={formData.identity.gender} />
-                  <ReviewRow label="Email" value={formData.identity.email} />
-                  <ReviewRow label="Phone" value={formData.identity.phone} />
-                  <ReviewRow label="Telegram username" value={formData.identity.telegramUsername} />
-                </dl>
-              </section>
-
-              <section className="rounded-lg border border-slate-200 p-5 dark:border-slate-800">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100">School & Projects</h3>
-                  <button type="button" onClick={() => setStep(1)} className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">Edit</button>
-                </div>
-                <dl className="mt-2 grid gap-x-6 sm:grid-cols-2">
-                  <ReviewRow label="Grade" value={formData.school.grade} />
-                  <ReviewRow label="Section" value={formData.school.section} />
-                </dl>
-                {formData.projects.length ? formData.projects.map((project: any, index: number) => (
-                  <div key={index} className="mt-3 border-t border-slate-100 pt-3 dark:border-slate-800">
-                    <p className="mb-1 text-xs font-bold uppercase text-slate-500">Project {index + 1}</p>
-                    <dl className="grid gap-x-6 sm:grid-cols-2">
-                      <ReviewRow label="Project title" value={project.projectName} />
-                      <ReviewRow label="Description" value={project.description} />
-                      <ReviewRow label="Project type" value={project.projectType} />
-                      <ReviewRow label="GitHub URL" value={project.githubUrl} />
-                      <ReviewRow label="Portfolio URL" value={project.portfolioUrl} />
-                      <ReviewRow label="Project links" value={project.links} />
-                      <ReviewRow label="Project files" value={project.files} />
-                    </dl>
+              <div className="border border-[#23262d] bg-[#07080b] p-6 space-y-6">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-[#23262d]">
+                    <span className="font-mono text-xs text-[#ff3700] font-bold">// IDENTITY</span>
+                    <button type="button" onClick={() => setStep(0)} className="font-mono text-xs text-[#828792] hover:text-[#f4f3ee] underline">EDIT</button>
                   </div>
-                )) : <p className="mt-3 text-sm text-slate-500">No projects provided.</p>}
-              </section>
-
-              <section className="rounded-lg border border-slate-200 p-5 dark:border-slate-800">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100">Technical Background</h3>
-                  <button type="button" onClick={() => setStep(2)} className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">Edit</button>
+                  <dl className="grid sm:grid-cols-2 gap-x-6">
+                    <ReviewRow label="Full Name" value={formData.identity.fullName} />
+                    <ReviewRow label="Age" value={formData.identity.age} />
+                    <ReviewRow label="Email" value={formData.identity.email} />
+                    <ReviewRow label="Phone" value={formData.identity.phone} />
+                    <ReviewRow label="Telegram" value={formData.identity.telegramUsername} />
+                    <ReviewRow label="Gender" value={formData.identity.gender} />
+                  </dl>
                 </div>
-                <dl className="mt-2 grid gap-x-6 sm:grid-cols-2">
-                  <ReviewRow label="Studied cybersecurity before" value={formData.techBackground.hasStudiedCyber} />
-                  <ReviewRow label="Cybersecurity studies description" value={formData.techBackground.cyberStudyDesc} />
-                  <ReviewRow label="Programming experience" value={formData.techBackground.programmingExp} />
-                  <ReviewRow label="Programming languages" value={formData.techBackground.programmingLangs} />
-                  <ReviewRow label="Operating systems" value={formData.techBackground.operatingSystems} />
-                  <ReviewRow label="Cybersecurity topics" value={formData.techBackground.cyberTopics} />
-                  <ReviewRow label="Previous experience" value={formData.techBackground.previousExperience} />
-                </dl>
-              </section>
 
-              <section className="rounded-lg border border-slate-200 p-5 dark:border-slate-800">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100">Motivation & Additional Information</h3>
-                  <button type="button" onClick={() => setStep(3)} className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">Edit</button>
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-[#23262d]">
+                    <span className="font-mono text-xs text-[#ff3700] font-bold">// ACADEMICS</span>
+                    <button type="button" onClick={() => setStep(1)} className="font-mono text-xs text-[#828792] hover:text-[#f4f3ee] underline">EDIT</button>
+                  </div>
+                  <dl className="grid sm:grid-cols-2 gap-x-6">
+                    <ReviewRow label="Grade" value={formData.school.grade} />
+                    <ReviewRow label="Section" value={formData.school.section} />
+                    <ReviewRow label="Project" value={formData.projects[0]?.projectName} />
+                    <ReviewRow label="Links" value={(formData.projects[0]?.links || []).join(", ")} />
+                  </dl>
                 </div>
-                <dl className="mt-2 grid gap-x-6 sm:grid-cols-2">
-                  <ReviewRow label="Why join" value={formData.motivation.motivationJoin} />
-                  <ReviewRow label="What to learn" value={formData.motivation.motivationLearn} />
-                  <ReviewRow label="Areas of interest" value={formData.motivation.areasOfInterest} />
-                  <ReviewRow label="Weekly availability" value={formData.motivation.weeklyAvailability} />
-                  <ReviewRow label="Additional skills" value={formData.additional.additionalSkills} />
-                  <ReviewRow label="How they heard about the club" value={formData.additional.howHeardAboutUs} />
-                </dl>
-              </section>
 
-              <section className="rounded-lg border border-slate-200 p-5 dark:border-slate-800">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100">Policy Agreement</h3>
-                  <button type="button" onClick={() => setStep(4)} className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">Edit</button>
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-[#23262d]">
+                    <span className="font-mono text-xs text-[#ff3700] font-bold">// TECHNICAL PROFICIENCY</span>
+                    <button type="button" onClick={() => setStep(2)} className="font-mono text-xs text-[#828792] hover:text-[#f4f3ee] underline">EDIT</button>
+                  </div>
+                  <dl className="grid sm:grid-cols-2 gap-x-6">
+                    <ReviewRow label="Experience" value={formData.techBackground.programmingExp} />
+                    <ReviewRow label="Languages" value={formData.techBackground.programmingLangs} />
+                    <ReviewRow label="Operating Systems" value={formData.techBackground.operatingSystems} />
+                    <ReviewRow label="Studied Cyber" value={formData.techBackground.hasStudiedCyber} />
+                  </dl>
                 </div>
-                <dl className="mt-2"><ReviewRow label="I agree to the application terms, privacy information, and cybersecurity ethics/lab-use policy" value={formData.terms.agreedToAccuracy} /></dl>
-              </section>
+
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-[#23262d]">
+                    <span className="font-mono text-xs text-[#ff3700] font-bold">// MOTIVATION</span>
+                    <button type="button" onClick={() => setStep(3)} className="font-mono text-xs text-[#828792] hover:text-[#f4f3ee] underline">EDIT</button>
+                  </div>
+                  <dl className="grid sm:grid-cols-2 gap-x-6">
+                    <ReviewRow label="Why Join" value={formData.motivation.motivationJoin} />
+                    <ReviewRow label="Focus Goals" value={formData.motivation.motivationLearn} />
+                    <ReviewRow label="Weekly Commitment" value={formData.motivation.weeklyAvailability} />
+                  </dl>
+                </div>
+              </div>
             </div>
           )}
 
-          <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 pt-8 mt-8 border-t border-slate-100 dark:border-slate-800">
+          {/* Navigation CTAs */}
+          <div className="border-t border-[#23262d] pt-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-4 font-mono">
             {step > 0 ? (
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={handleBack} 
+              <button
+                type="button"
+                onClick={handleBack}
                 disabled={isPending}
-                className="w-full sm:w-auto hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-[#23262d] bg-[#111317] px-6 py-3 text-xs text-[#828792] hover:text-[#f4f3ee] hover:border-[#828792] transition-colors"
               >
-                <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            ) : <div className="hidden sm:block"></div>}
-            
-            <Button 
-              type="submit" 
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>PREVIOUS PHASE</span>
+              </button>
+            ) : <div className="hidden sm:block" />}
+
+            <button
+              type="submit"
               disabled={isPending}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#ff3700] px-8 py-3.5 text-xs font-bold uppercase tracking-wider text-black hover:bg-[#ff5419] transition-all shadow-brutalist hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50"
             >
               {step < 4 ? (
-                <>Next Step <ArrowRightIcon className="w-4 h-4 ml-2" /></>
+                <>
+                  <span>CONTINUE TO 0{step + 2}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
               ) : step === 4 ? (
-                <>Review Application <ArrowRightIcon className="w-4 h-4 ml-2" /></>
+                <>
+                  <span>AUDIT APPLICATION DOSSIER</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
               ) : isPending ? (
-                "Submitting..."
+                "LODGING DOSSIER..."
               ) : (
-                <>Confirm & Submit Application <ShieldCheckIcon className="w-4 h-4 ml-2" /></>
+                <>
+                  <span>CONFIRM &amp; LODGE CADET APPLICATION</span>
+                  <Check className="w-4 h-4" />
+                </>
               )}
-            </Button>
+            </button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
