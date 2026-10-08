@@ -11,7 +11,7 @@ model RegistrationSettings {
   id                String    @id @default("default")
   isOpen            Boolean   @default(false)
   deadline          DateTime?
-  clubDisplayName   String    @default("BJMCS Cyber Club")
+  clubDisplayName   String    @default("BGMCS Cyber Club")
   englishNameFuture String?
   amharicNameFuture String?
   updatedAt         DateTime  @updatedAt

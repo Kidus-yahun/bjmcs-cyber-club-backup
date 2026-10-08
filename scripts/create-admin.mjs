@@ -10,7 +10,7 @@ function hashPassword(password) {
 }
 
 async function main() {
-  console.log("=== BJMCS Cyber Club Admin Setup ===");
+  console.log("=== BGMCS Cyber Club Admin Setup ===");
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
   const name = process.env.ADMIN_NAME || 'System Administrator';

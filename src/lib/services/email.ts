@@ -50,7 +50,7 @@ export async function sendSelectionEmail(
         <h2>Congratulations, ${name}!</h2>
         <p>
           We are thrilled to inform you that your application to the
-          <strong>BJMCS Cyber Club</strong> has been carefully reviewed
+          <strong>BGMCS Cyber Club</strong> has been carefully reviewed
           and you have been selected to join us.
         </p>
 
@@ -80,14 +80,14 @@ export async function sendSelectionEmail(
 
         <br/>
         <p>Welcome to the club!</p>
-        <p>Best regards,<br/>BJMCS Cyber Club Team</p>
+        <p>Best regards,<br/>BGMCS Cyber Club Team</p>
       </div>
     `;
 
     const textContent = `
 Congratulations, ${name}!
 
-We are thrilled to inform you that your application to the BJMCS Cyber Club has been carefully reviewed and you have been selected to join us.
+We are thrilled to inform you that your application to the BGMCS Cyber Club has been carefully reviewed and you have been selected to join us.
 
 Your Application Reference: ${reference}
 
@@ -104,13 +104,13 @@ ${activationUrl}`
 Welcome to the club!
 
 Best regards,
-BJMCS Cyber Club Team
+BGMCS Cyber Club Team
     `.trim();
 
     const { data, error } = await resend.emails.send({
-      from: "BJMCS Cyber Club <noreply@bjmcs-cyber.bbroot.com>",
+      from: "BGMCS Cyber Club <noreply@bgmcs-cyber.bbroot.com>",
       to,
-      subject: "Congratulations! You have been selected for BJMCS Cyber Club",
+      subject: "Congratulations! You have been selected for BGMCS Cyber Club",
       text: textContent,
       html: htmlContent,
     });
@@ -118,8 +118,8 @@ BJMCS Cyber Club Team
     if (error) {
       console.error("[EMAIL SERVICE ERROR] Resend rejected the request", {
         to,
-        from: "BJMCS Cyber Club <noreply@bjmcs-cyber.bbroot.com>",
-        subject: "Congratulations! You have been selected for BJMCS Cyber Club",
+        from: "BGMCS Cyber Club <noreply@bgmcs-cyber.bbroot.com>",
+        subject: "Congratulations! You have been selected for BGMCS Cyber Club",
         error,
         statusCode: (error as { statusCode?: number })?.statusCode,
         body: (error as { body?: unknown })?.body,
@@ -155,30 +155,30 @@ export async function sendApplicationUpdateEmail(
 
   try {
     const resend = new Resend(apiKey);
-    const subject = "An update about your BJMCS Cyber Club application";
+    const subject = "An update about your BGMCS Cyber Club application";
     const text = `Dear ${name},
 
-Thank you for applying to the BJMCS Cyber Club. We appreciate the time and care you put into your application (reference: ${reference}).
+Thank you for applying to the BGMCS Cyber Club. We appreciate the time and care you put into your application (reference: ${reference}).
 
 After reviewing applications for this intake, we are unable to offer you a place at this time. The number of places is limited, and this decision is not a reflection of your potential or a failure. We encourage you to continue learning and to apply again in a future intake.
 
-Thank you again for your interest in the BJMCS Cyber Club.
+Thank you again for your interest in the BGMCS Cyber Club.
 
 Best regards,
-BJMCS Cyber Club Team`;
+BGMCS Cyber Club Team`;
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; color: #333; line-height: 1.6;">
         <p>Dear ${name},</p>
-        <p>Thank you for applying to the <strong>BJMCS Cyber Club</strong>. We appreciate the time and care you put into your application.</p>
+        <p>Thank you for applying to the <strong>BGMCS Cyber Club</strong>. We appreciate the time and care you put into your application.</p>
         <p><strong>Application reference:</strong> ${reference}</p>
         <p>After reviewing applications for this intake, we are unable to offer you a place at this time. The number of places is limited, and this decision is not a reflection of your potential or a failure. We encourage you to continue learning and to apply again in a future intake.</p>
-        <p>Thank you again for your interest in the BJMCS Cyber Club.</p>
-        <p>Best regards,<br/>BJMCS Cyber Club Team</p>
+        <p>Thank you again for your interest in the BGMCS Cyber Club.</p>
+        <p>Best regards,<br/>BGMCS Cyber Club Team</p>
       </div>
     `;
 
     const { data, error } = await resend.emails.send({
-      from: "BJMCS Cyber Club <noreply@bjmcs-cyber.bbroot.com>",
+      from: "BGMCS Cyber Club <noreply@bgmcs-cyber.bbroot.com>",
       to,
       subject,
       text,

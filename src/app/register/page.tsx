@@ -6,7 +6,7 @@ import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Register",
-  description: "Apply to join the BJMCS Cyber Club",
+  description: "Apply to join the BGMCS Cyber Club",
 };
 
 export const dynamic = "force-dynamic";

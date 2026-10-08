@@ -1,5 +1,5 @@
 /**
- * BJMCS Cyber Club — Site configuration
+ * BGMCS Cyber Club — Site configuration
  *
  * Central place for club branding and site-wide constants.
  */
@@ -18,7 +18,7 @@ function getAppBaseUrl(): string {
 
 export const siteConfig = {
   /** Abbreviated display name (current official name) */
-  name: "BJMCS Cyber Club",
+  name: "BGMCS Cyber Club",
 
   /**
    * Full official English name.
@@ -33,7 +33,7 @@ export const siteConfig = {
   amharicName: null as string | null,
 
   /** Short description used in metadata */
-  description: "Official platform of BJMCS Cyber Club",
+  description: "Official platform of BGMCS Cyber Club",
 
   /** Public-facing base URL (set via environment in production) */
   url: getAppBaseUrl(),

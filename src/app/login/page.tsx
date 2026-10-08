@@ -47,7 +47,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-all duration-300">
                 <ShieldIcon className="h-6 w-6 text-[#22d3ee]" />
               </div>
-              <span className="text-2xl font-bold tracking-tight text-white">BJMCS Cyber Club</span>
+              <span className="text-2xl font-bold tracking-tight text-white">BGMCS Cyber Club</span>
             </Link>
           </div>
 
@@ -56,8 +56,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <p className="text-2xl font-medium text-white leading-snug">
                 "Security is a state of mind, not an end state. We build the defenders of tomorrow by challenging the boundaries of today."
               </p>
-              <footer className="text-sm font-semibold text-[#22d3ee]">
-                — BJMCS Academy Director
+              <footer className="text-sm font-semibold text-[#ff3b00] font-mono">
+                — BGMCS Academy Director
               </footer>
             </blockquote>
           </div>

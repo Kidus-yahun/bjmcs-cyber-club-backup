@@ -50,7 +50,7 @@ export default async function StudentDashboardPage() {
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
               Welcome back, <span className="text-cyan-400">{student.application.fullName}</span>
             </h1>
-            <p className="text-slate-400 text-lg">BJMCS Cyber Club Academy Portal</p>
+            <p className="text-slate-400 text-lg">BGMCS Cyber Club Academy Portal</p>
           </div>
           <div className="flex flex-col items-start md:items-end gap-2">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-sm font-mono text-cyan-300">

@@ -496,7 +496,7 @@ export function RegistrationForm() {
 
               <div className="space-y-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Why do you want to join the BJMCS Cyber Club?</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Why do you want to join the BGMCS Cyber Club?</label>
                   <textarea 
                     className="flex w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 placeholder:text-slate-400" 
                     required 
@@ -552,7 +552,7 @@ export function RegistrationForm() {
                 </details>
                 <details className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
                   <summary className="cursor-pointer font-semibold text-slate-900 dark:text-slate-100">Privacy Information</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Information you provide, including contact details and academic or technical responses, will be used by the BJMCS Cyber Club administrators to review your application and, if selected, manage club participation. It will not be displayed publicly as part of the application process.</p>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Information you provide, including contact details and academic or technical responses, will be used by the BGMCS Cyber Club administrators to review your application and, if selected, manage club participation. It will not be displayed publicly as part of the application process.</p>
                 </details>
                 <details className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
                   <summary className="cursor-pointer font-semibold text-slate-900 dark:text-slate-100">Cybersecurity Ethics & Lab Use</summary>

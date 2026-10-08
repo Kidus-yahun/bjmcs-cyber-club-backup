@@ -6,7 +6,7 @@ function hashPassword(password) {
   return `${salt}:${derivedKey}`;
 }
 
-const email = "admin@bjmcs.com";
+const email = "admin@bgmcs.com";
 const name = "System Administrator";
 const password = process.env.ADMIN_PASSWORD;
 

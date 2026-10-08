@@ -9,7 +9,7 @@ async function generateReferenceNumber(): Promise<string> {
 
   while (!unique && attempts < 10) {
     const randomPart = Math.floor(10000 + Math.random() * 90000);
-    reference = `BJMCS-${year}-${randomPart}`;
+    reference = `BGMCS-${year}-${randomPart}`;
     const existing = await db.application.findUnique({
       where: { reference },
       select: { id: true },

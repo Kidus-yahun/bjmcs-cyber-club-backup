@@ -82,7 +82,7 @@ export default async function StudentCertificatePage() {
 
       <div className="text-center mb-4 relative z-10">
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">Credential Verification</h1>
-        <p className="text-slate-500 dark:text-slate-400">Track the issuance status of your official BJMCS Cyber Club Certificate.</p>
+        <p className="text-slate-500 dark:text-slate-400">Track the issuance status of your official BGMCS Cyber Club Certificate.</p>
       </div>
 
       <Card className={`w-full max-w-2xl relative z-10 overflow-hidden transition-all duration-500 shadow-xl border-2 ${display.border} ${display.bg} backdrop-blur-sm`}>

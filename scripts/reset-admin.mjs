@@ -10,7 +10,7 @@ function hashPassword(password) {
 }
 
 async function main() {
-  console.log("=== BJMCS Cyber Club Admin Password Reset ===");
+  console.log("=== BGMCS Cyber Club Admin Password Reset ===");
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
 

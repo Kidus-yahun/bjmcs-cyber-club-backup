@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       >
         <div className="p-6 hidden md:block border-b border-slate-800">
           <h2 className="text-xl font-bold tracking-tight text-white">Admin Portal</h2>
-          <p className="text-xs text-slate-400 mt-1 font-medium tracking-wide">BJMCS CYBER CLUB</p>
+          <p className="text-xs text-slate-400 mt-1 font-medium tracking-wide">BGMCS CYBER CLUB</p>
         </div>
         
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 mt-16 md:mt-0">
