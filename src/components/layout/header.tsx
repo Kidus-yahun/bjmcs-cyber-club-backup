@@ -32,15 +32,15 @@ export function Header() {
                 {siteConfig.name}
               </span>
               <span className="font-mono text-[10px] text-[#828792] tracking-widest uppercase">
-                DEFENSE & RESEARCH CELL
+                STUDENT TECH &amp; CYBER CLUB
               </span>
             </div>
           </Link>
           
           <div className="hidden xl:flex items-center gap-2 border-l border-[#23262d] pl-6 py-1">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#ff3700] animate-pulse"></span>
+            <span className="inline-block w-2 h-2 rounded-full bg-[#ff3700]"></span>
             <span className="font-mono text-[11px] text-[#828792] tracking-wider uppercase">
-              STATUS: NOMINAL // INTAKE OPEN
+              STATUS: ACTIVE // 2026/27
             </span>
           </div>
         </div>

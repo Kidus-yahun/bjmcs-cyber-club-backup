@@ -1,7 +1,7 @@
 import { siteConfig } from "@/config/site";
 import { db } from "@/lib/db";
 import Link from "next/link";
-import { ArrowUpRight, Shield, Terminal, Cpu, Lock, Crosshair, ArrowRight, CornerDownRight } from "lucide-react";
+import { ArrowRight, Terminal, Shield, Cpu, Lock, CheckCircle2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -19,73 +19,69 @@ export default async function Home() {
   const isPastDeadline = settings?.deadline ? new Date() > settings?.deadline : false;
   const isClosed = !isOpen || isPastDeadline;
 
-  let statusText = "ADMISSIONS ACTIVE // REVIEWING CADET SUBMISSIONS";
+  let statusText = "APPLICATIONS OPEN // 2026/27";
   if (!isOpen) {
-    statusText = "REGISTRATION CLOSED // COHORT LOCKED";
+    statusText = "REGISTRATION CLOSED";
   } else if (isPastDeadline) {
-    statusText = "DEADLINE EXPIRED // APPLICATION PORTAL SEALED";
+    statusText = "DEADLINE PASSED";
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#090a0d] text-[#f4f3ee]">
-      {/* Top Telemetry Dispatch Ticker */}
-      <div className="border-b border-[#23262d] bg-[#0c0e12] py-2.5 px-4 sm:px-6 lg:px-8 font-mono text-[11px] text-[#828792]">
+      {/* Top Status Strip */}
+      <div className="border-b border-[#23262d] bg-[#0c0e12] py-2 px-4 sm:px-6 lg:px-8 font-mono text-[11px] text-[#828792]">
         <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#ff3700] animate-ping" />
-            <span className="text-[#f4f3ee] font-semibold tracking-wider uppercase">
-              BGMCS RESEARCH DISPATCH // SYS_VER: 2026.4
-            </span>
-            <span className="hidden md:inline text-[#3a3f4a]">|</span>
-            <span className="hidden md:inline text-[#828792]">
-              TOPOLOGY: AIR-GAPPED TRAINING SUBNET &bull; LAT: 11.59 &bull; LON: 37.38
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block w-2 h-2 rounded-full bg-[#ff3700]" />
+            <span className="text-[#f4f3ee] font-semibold uppercase tracking-wider">
+              {siteConfig.name} &bull; STUDENT CYBERSECURITY INITIATIVE
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span className="text-[#ff3700] uppercase font-bold tracking-wider">{statusText}</span>
           </div>
         </div>
       </div>
 
-      {/* Hero Section: Asymmetrical Editorial Masthead */}
+      {/* Hero Section: Simple, High-Taste Editorial Asymmetry */}
       <section className="relative border-b border-[#23262d] overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
             
-            {/* Left Column: Heavy Editorial Statement (7 cols) */}
-            <div className="lg:col-span-7 flex flex-col space-y-8">
+            {/* Left: Punchy statement, clear & approachable */}
+            <div className="lg:col-span-7 flex flex-col space-y-6">
               <div className="inline-flex items-center gap-2 border border-[#23262d] bg-[#111317] px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-[#828792] w-fit">
-                <span className="text-[#ff3700] font-bold">#</span>
-                <span>DISCIPLINE OVER INTUITION</span>
+                <span className="text-[#ff3700] font-bold">&bull;</span>
+                <span>STUDENT TECH &amp; CYBER CLUB</span>
                 <span className="text-[#3a3f4a]">&bull;</span>
-                <span className="text-[#f4f3ee]">COHORT 2026/27</span>
+                <span className="text-[#f4f3ee]">ACADEMIC YEAR 2026/27</span>
               </div>
 
               <div className="space-y-4">
-                <h1 className="font-serif-display italic text-5xl sm:text-7xl lg:text-[5.5rem] leading-[0.92] text-[#f4f3ee] tracking-tight">
-                  Exploits punish bad architecture.
-                  <span className="font-sans font-black uppercase text-4xl sm:text-6xl lg:text-[4.6rem] text-[#ff3700] block tracking-tighter not-italic mt-3">
-                    Never luck.
+                <h1 className="font-serif-display italic text-5xl sm:text-7xl lg:text-[5.2rem] leading-[0.95] text-[#f4f3ee] tracking-tight">
+                  Building young minds to defend
+                  <span className="font-sans font-black uppercase text-4xl sm:text-6xl lg:text-[4.4rem] text-[#ff3700] block tracking-tighter not-italic mt-2">
+                    our digital world.
                   </span>
                 </h1>
                 
-                <p className="font-sans text-base sm:text-lg text-[#a2a7b2] leading-relaxed max-w-2xl pt-2">
-                  <strong className="text-[#f4f3ee] font-semibold">{siteConfig.name}</strong> is an autonomous collegiate offensive research cell and defense laboratory. We discard point-and-click scanners and generic certification quizzes. We dismantle x86_64 binaries, audit memory structures, break weak cryptographic implementations, and build resilient infrastructure under live adversary conditions.
+                <p className="font-sans text-base sm:text-lg text-[#a2a7b2] leading-relaxed max-w-xl">
+                  <strong className="text-[#f4f3ee] font-semibold">{siteConfig.name}</strong> empowers students with practical computing, ethical hacking fundamentals, and hands-on defense skills in safe, supervised environments.
                 </p>
               </div>
 
-              {/* Action Buttons & Ledger Status */}
-              <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 {isClosed ? (
-                  <span className="inline-flex items-center justify-center border border-[#3a3f4a] bg-[#1a1c22] px-7 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-[#828792] cursor-not-allowed">
-                    [APPLICATIONS CLOSED]
+                  <span className="inline-flex items-center justify-center border border-[#3a3f4a] bg-[#1a1c22] px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-[#828792] cursor-not-allowed">
+                    [REGISTRATION CLOSED]
                   </span>
                 ) : (
                   <Link
                     href="/register"
                     className="inline-flex items-center justify-center bg-[#ff3700] px-7 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-black hover:bg-[#ff5419] transition-all duration-150 shadow-brutalist hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                   >
-                    <span>APPLY FOR CADET INTAKE</span>
+                    <span>JOIN THE CLUB</span>
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 )}
@@ -94,82 +90,68 @@ export default async function Home() {
                   href="/login"
                   className="inline-flex items-center justify-center border border-[#23262d] bg-[#111317] px-6 py-3.5 font-mono text-xs font-medium uppercase tracking-wider text-[#f4f3ee] hover:border-[#828792] hover:bg-[#171a21] transition-colors"
                 >
-                  <span>MEMBER ACCESS // TERMINAL</span>
+                  <span>MEMBER LOGIN</span>
                 </Link>
               </div>
 
-              {/* Live Metric Row */}
+              {/* High-level metrics: Clean & Easy for leadership to read */}
               <div className="pt-6 border-t border-[#23262d] grid grid-cols-3 gap-6 font-mono text-xs">
                 <div>
-                  <div className="text-[#828792] uppercase text-[10px] tracking-wider">// ADMISSION RATE</div>
-                  <div className="text-xl font-bold text-[#f4f3ee] mt-1">~14%</div>
-                  <div className="text-[10px] text-[#525866]">Curiosity & grit review</div>
+                  <div className="text-[#828792] uppercase text-[10px] tracking-wider">// PRACTICAL LABS</div>
+                  <div className="text-xl font-bold text-[#f4f3ee] mt-1">100%</div>
+                  <div className="text-[10px] text-[#525866]">Hands-on projects</div>
                 </div>
                 <div>
-                  <div className="text-[#828792] uppercase text-[10px] tracking-wider">// WEEKLY COMMITMENT</div>
-                  <div className="text-xl font-bold text-[#ff3700] mt-1">8+ HRS</div>
-                  <div className="text-[10px] text-[#525866]">Hands-on lab work</div>
+                  <div className="text-[#828792] uppercase text-[10px] tracking-wider">// ETHICAL CODE</div>
+                  <div className="text-xl font-bold text-[#ff3700] mt-1">STRICT</div>
+                  <div className="text-[10px] text-[#525866]">Supervised practice</div>
                 </div>
                 <div>
-                  <div className="text-[#828792] uppercase text-[10px] tracking-wider">// WARGAME EXERCISES</div>
-                  <div className="text-xl font-bold text-[#f4f3ee] mt-1">18 / YR</div>
-                  <div className="text-[10px] text-[#525866]">Internal & national CTFs</div>
+                  <div className="text-[#828792] uppercase text-[10px] tracking-wider">// TEAM WORK</div>
+                  <div className="text-xl font-bold text-[#f4f3ee] mt-1">COLLAB</div>
+                  <div className="text-[10px] text-[#525866]">Peer mentorship</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Tactical Dossier Docket (5 cols) */}
+            {/* Right: Clean Club Card */}
             <div className="lg:col-span-5">
-              <div className="border border-[#23262d] bg-[#0e1015] p-6 sm:p-8 font-mono relative">
-                {/* Visual Docket Header Stamp */}
+              <div className="border border-[#23262d] bg-[#0e1015] p-6 sm:p-8 font-mono">
                 <div className="flex items-center justify-between pb-4 border-b border-[#23262d] text-xs">
                   <div className="flex items-center gap-2 text-[#ff3700] font-bold">
-                    <Terminal className="h-4 w-4" />
-                    <span>DOCKET // BGMCS-SPEC-01</span>
+                    <Shield className="h-4 w-4" />
+                    <span>CLUB OVERVIEW</span>
                   </div>
-                  <span className="text-[#525866] text-[10px]">CLASSIF: EDUCATIONAL_DEFENSE</span>
+                  <span className="text-[#525866] text-[10px]">VERIFIED 2026/27</span>
                 </div>
 
-                <div className="py-5 space-y-4 text-xs">
+                <div className="py-5 space-y-3.5 text-xs">
                   <div className="flex justify-between border-b border-[#1b1e25] pb-2">
-                    <span className="text-[#828792]">ORGANIZATION:</span>
+                    <span className="text-[#828792]">NAME:</span>
                     <span className="text-[#f4f3ee] font-semibold">{siteConfig.name}</span>
                   </div>
                   <div className="flex justify-between border-b border-[#1b1e25] pb-2">
-                    <span className="text-[#828792]">OPERATIONAL CADENCE:</span>
-                    <span className="text-[#f4f3ee]">3X Weekly Reversing Labs</span>
+                    <span className="text-[#828792]">FOCUS:</span>
+                    <span className="text-[#f4f3ee]">Cybersecurity &amp; Programming</span>
                   </div>
                   <div className="flex justify-between border-b border-[#1b1e25] pb-2">
-                    <span className="text-[#828792]">RANGE ARCHITECTURE:</span>
-                    <span className="text-[#f4f3ee]">Isolated QEMU / Proxmox</span>
+                    <span className="text-[#828792]">SAFETY:</span>
+                    <span className="text-[#f4f3ee]">Dedicated Sandbox Environment</span>
                   </div>
                   <div className="flex justify-between border-b border-[#1b1e25] pb-2">
-                    <span className="text-[#828792]">PRIMARY COMPLIANCE:</span>
-                    <span className="text-[#f4f3ee]">Strict Authorization Only</span>
+                    <span className="text-[#828792]">GOAL:</span>
+                    <span className="text-[#f4f3ee]">Future Tech Leadership</span>
                   </div>
                 </div>
 
-                {/* Simulated Binary Telemetry Block */}
-                <div className="mt-4 p-4 bg-[#060709] border border-[#1b1e25] text-[11px] leading-relaxed">
-                  <div className="text-[#525866] mb-1">// REAL-TIME MEMORY AUDIT PREVIEW</div>
-                  <div className="text-[#828792]">
-                    0x7fff5fbff820: <span className="text-[#f4f3ee]">48 31 c0 50 48 bf 2f 62</span>
+                <div className="mt-4 p-4 bg-[#060709] border border-[#1b1e25] text-xs">
+                  <div className="text-[#ff3700] font-semibold mb-1 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>SCHOOL &amp; STUDENT BENEFITS</span>
                   </div>
-                  <div className="text-[#828792]">
-                    0x7fff5fbff828: <span className="text-[#f4f3ee]">69 6e 2f 2f 73 68 57 54</span>
-                  </div>
-                  <div className="text-[#ff3700] font-bold mt-2">
-                    &gt;&gt; STACK_FRAME: ASLR_ACTIVE // NX_PROTECTED
-                  </div>
-                  <div className="text-[#828792] text-[10px] mt-1">
-                    *Cadets build custom ROP chains to bypass mitigations in lab challenges.
-                  </div>
-                </div>
-
-                {/* Bottom Docket Note */}
-                <div className="mt-6 pt-4 border-t border-[#23262d] flex items-center justify-between text-[10px] text-[#828792]">
-                  <span>NODE DISPATCH: SECURE</span>
-                  <span className="text-[#ff3700]">AUTHENTICATED // BGMCS-LAB</span>
+                  <p className="text-[#828792] text-[11px] leading-relaxed mt-1">
+                    Fosters critical problem-solving, digital safety awareness, and collaborative engineering skills that prepare students for university and STEM careers.
+                  </p>
                 </div>
               </div>
             </div>
@@ -178,119 +160,85 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Section 1: Research Divisions (Asymmetrical Index Layout - NO symmetrical 4-card grid) */}
-      <section id="disciplines" className="border-b border-[#23262d] py-20 lg:py-28 bg-[#090a0d]">
+      {/* Section 1: Core Tracks (Clear & concise) */}
+      <section id="disciplines" className="border-b border-[#23262d] py-16 lg:py-20 bg-[#090a0d]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
-          {/* Section Header */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end mb-16 pb-8 border-b border-[#23262d]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end mb-12 pb-6 border-b border-[#23262d]">
             <div className="lg:col-span-7">
-              <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-2">
-                // 01. RESEARCH DIVISIONS
+              <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+                // 01. LEARNING TRACKS
               </span>
-              <h2 className="font-serif-display italic text-4xl sm:text-6xl text-[#f4f3ee] tracking-tight">
-                Four battlefronts. Zero generic tutorials.
+              <h2 className="font-serif-display italic text-3xl sm:text-5xl text-[#f4f3ee] tracking-tight">
+                What students learn.
               </h2>
             </div>
             <div className="lg:col-span-5">
-              <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                We organize all activities into dedicated technical tracks. Cadets specialize, dissect concrete software artifacts, and conduct peer code audits.
+              <p className="font-sans text-sm text-[#828792]">
+                Curated curriculum designed to take curious students from foundational computer concepts to advanced technical competence.
               </p>
             </div>
           </div>
 
-          {/* Staggered Asymmetrical Division Ledger */}
           <div className="divide-y divide-[#23262d] border-t border-b border-[#23262d]">
             
-            {/* Division 01 */}
-            <div className="py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start hover:bg-[#0e1015] transition-colors px-4 -mx-4">
-              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">
-                01/
-              </div>
+            {/* Track 01 */}
+            <div className="py-6 sm:py-7 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center hover:bg-[#0e1015] transition-colors px-4 -mx-4">
+              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">01/</div>
               <div className="lg:col-span-4">
-                <h3 className="font-sans font-bold text-xl sm:text-2xl text-[#f4f3ee] tracking-tight">
-                  Offensive Security &amp; Exploitation
-                </h3>
-                <span className="font-mono text-[11px] text-[#ff3700] uppercase tracking-wider block mt-1">
-                  [VULNERABILITY RESEARCH // REVERSING]
-                </span>
+                <h3 className="font-sans font-bold text-lg text-[#f4f3ee]">Security &amp; Ethical Hacking</h3>
+                <span className="font-mono text-[10px] text-[#828792] uppercase block mt-0.5">Foundations &amp; Analysis</span>
               </div>
-              <div className="lg:col-span-5">
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Disassembling stripped binaries, understanding heap allocators, crafting Return-Oriented Programming (ROP) chains, and diagnosing modern browser/kernel attack surfaces.
-                </p>
+              <div className="lg:col-span-5 text-sm text-[#828792]">
+                Understanding vulnerabilities, safe testing, and how modern software systems protect user data.
               </div>
               <div className="lg:col-span-2 font-mono text-[11px] text-[#525866] lg:text-right">
-                STACK: C &bull; x86_64 &bull; Ghidra &bull; GDB
+                PRACTICAL LABS
               </div>
             </div>
 
-            {/* Division 02 */}
-            <div className="py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start hover:bg-[#0e1015] transition-colors px-4 -mx-4">
-              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">
-                02/
-              </div>
+            {/* Track 02 */}
+            <div className="py-6 sm:py-7 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center hover:bg-[#0e1015] transition-colors px-4 -mx-4">
+              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">02/</div>
               <div className="lg:col-span-4">
-                <h3 className="font-sans font-bold text-xl sm:text-2xl text-[#f4f3ee] tracking-tight">
-                  Defensive Architecture &amp; Telemetry
-                </h3>
-                <span className="font-mono text-[11px] text-[#ff3700] uppercase tracking-wider block mt-1">
-                  [SYSTEM HARDENING // INCIDENT RESPONSE]
-                </span>
+                <h3 className="font-sans font-bold text-lg text-[#f4f3ee]">Networks &amp; Infrastructure</h3>
+                <span className="font-mono text-[10px] text-[#828792] uppercase block mt-0.5">Defensive Architecture</span>
               </div>
-              <div className="lg:col-span-5">
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Engineering zero-trust enterprise segmentation, inspecting kernel audit logs via eBPF, threat hunting active adversary footprints, and deploying memory-safe service architectures.
-                </p>
+              <div className="lg:col-span-5 text-sm text-[#828792]">
+                Learning how the internet works, inspecting network packets, configuring firewalls, and server hardening.
               </div>
               <div className="lg:col-span-2 font-mono text-[11px] text-[#525866] lg:text-right">
-                STACK: Rust &bull; eBPF &bull; Linux &bull; Suricata
+                LINUX &bull; NETWORKING
               </div>
             </div>
 
-            {/* Division 03 */}
-            <div className="py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start hover:bg-[#0e1015] transition-colors px-4 -mx-4">
-              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">
-                03/
-              </div>
+            {/* Track 03 */}
+            <div className="py-6 sm:py-7 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center hover:bg-[#0e1015] transition-colors px-4 -mx-4">
+              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">03/</div>
               <div className="lg:col-span-4">
-                <h3 className="font-sans font-bold text-xl sm:text-2xl text-[#f4f3ee] tracking-tight">
-                  Applied Cryptography &amp; Protocols
-                </h3>
-                <span className="font-mono text-[11px] text-[#ff3700] uppercase tracking-wider block mt-1">
-                  [CRYPTANALYSIS // PROTOCOL PROBING]
-                </span>
+                <h3 className="font-sans font-bold text-lg text-[#f4f3ee]">Applied Programming &amp; Logic</h3>
+                <span className="font-mono text-[10px] text-[#828792] uppercase block mt-0.5">Software Engineering</span>
               </div>
-              <div className="lg:col-span-5">
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Auditing implementations of key exchange protocols, testing post-quantum algorithms against mathematical lattice attacks, and exposing cache side-channel timing vulnerabilities.
-                </p>
+              <div className="lg:col-span-5 text-sm text-[#828792]">
+                Writing clean, reliable scripts in Python and C to automate security tasks and solve logic challenges.
               </div>
               <div className="lg:col-span-2 font-mono text-[11px] text-[#525866] lg:text-right">
-                STACK: Sage &bull; Python &bull; OpenSSL &bull; Kyber
+                PYTHON &bull; C
               </div>
             </div>
 
-            {/* Division 04 */}
-            <div className="py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start hover:bg-[#0e1015] transition-colors px-4 -mx-4">
-              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">
-                04/
-              </div>
+            {/* Track 04 */}
+            <div className="py-6 sm:py-7 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center hover:bg-[#0e1015] transition-colors px-4 -mx-4">
+              <div className="lg:col-span-1 font-mono text-xs font-bold text-[#ff3700]">04/</div>
               <div className="lg:col-span-4">
-                <h3 className="font-sans font-bold text-xl sm:text-2xl text-[#f4f3ee] tracking-tight">
-                  Competitive Wargames &amp; CTF
-                </h3>
-                <span className="font-mono text-[11px] text-[#ff3700] uppercase tracking-wider block mt-1">
-                  [ADVERSARY EMULATION // RED VS BLUE]
-                </span>
+                <h3 className="font-sans font-bold text-lg text-[#f4f3ee]">Team Competitions &amp; CTFs</h3>
+                <span className="font-mono text-[10px] text-[#828792] uppercase block mt-0.5">Collaborative Challenges</span>
               </div>
-              <div className="lg:col-span-5">
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Real-time attack-defense challenges under tight deadlines. We deploy squads to solve complex reversing, pwn, web exploitation, and hardware fault injection scenarios against regional rivals.
-                </p>
+              <div className="lg:col-span-5 text-sm text-[#828792]">
+                Participating as a school squad in friendly regional and student Capture-The-Flag wargames.
               </div>
               <div className="lg:col-span-2 font-mono text-[11px] text-[#525866] lg:text-right">
-                FORMAT: DEFCON Quals &bull; Attack-Defense
+                TEAMWORK &bull; CTFS
               </div>
             </div>
 
@@ -298,179 +246,129 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Section 2: The 3-Phase Operational Blueprint (Editorial Magazine-Style Typesetting) */}
-      <section id="blueprint" className="border-b border-[#23262d] py-20 lg:py-28 bg-[#0b0c10]">
+      {/* Section 2: 3-Phase Progression (Simplified & Clear) */}
+      <section id="blueprint" className="border-b border-[#23262d] py-16 lg:py-20 bg-[#0b0c10]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Left Column: Manifesto Quote (5 cols) */}
-            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
+            <div className="lg:col-span-5 space-y-4">
               <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block">
-                // 02. CURRICULUM BLUEPRINT
+                // 02. STUDENT ROADMAP
               </span>
-              <blockquote className="font-serif-display italic text-3xl sm:text-5xl text-[#f4f3ee] leading-tight">
-                &ldquo;Most computing courses lag years behind the real threat frontier. We bridge that gap before you graduate.&rdquo;
-              </blockquote>
-              <div className="font-mono text-xs text-[#828792] pt-4 border-t border-[#23262d]">
-                METHODOLOGY: ZERO FLUFF &bull; 100% REVERSIBLE ARTIFACTS
-              </div>
+              <h2 className="font-serif-display italic text-3xl sm:text-5xl text-[#f4f3ee] leading-tight">
+                Clear steps from day one to capstone.
+              </h2>
+              <p className="font-sans text-sm text-[#828792] leading-relaxed">
+                Structured in progressive phases so any motivated student can build confidence at their own pace.
+              </p>
             </div>
 
-            {/* Right Column: 3 Staggered Operational Phases (7 cols) */}
-            <div className="lg:col-span-7 space-y-8">
-              
-              {/* Phase 1 */}
-              <div className="border border-[#23262d] bg-[#090a0d] p-8 space-y-4">
-                <div className="flex items-center justify-between font-mono text-xs text-[#ff3700]">
-                  <span className="font-bold">// PHASE 01</span>
-                  <span>WEEKS 01 &ndash; 08</span>
-                </div>
-                <h3 className="font-sans font-bold text-2xl text-[#f4f3ee]">
-                  The Rigorous Foundation
-                </h3>
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Cadets strip down the operating system. We cover assembly syntax, stack manipulation, pointer arithmetic, socket programming in raw C, and deep packet dissection with Scapy and Wireshark. Automated vulnerability scanners are banned during this phase.
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="border border-[#23262d] bg-[#090a0d] p-6 space-y-3">
+                <div className="font-mono text-xs font-bold text-[#ff3700]">// 01. FUNDAMENTALS</div>
+                <h3 className="font-sans font-bold text-lg text-[#f4f3ee]">Learn The Basics</h3>
+                <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                  Computer systems, Linux commands, internet protocols, and basic programming.
                 </p>
-                <div className="pt-4 border-t border-[#1b1e25] font-mono text-xs text-[#525866]">
-                  BENCHMARK: Build a custom network packet sniffer &amp; parse raw ethernet frames from scratch.
-                </div>
               </div>
 
-              {/* Phase 2 */}
-              <div className="border border-[#23262d] bg-[#090a0d] p-8 space-y-4">
-                <div className="flex items-center justify-between font-mono text-xs text-[#ff3700]">
-                  <span className="font-bold">// PHASE 02</span>
-                  <span>WEEKS 09 &ndash; 18</span>
-                </div>
-                <h3 className="font-sans font-bold text-2xl text-[#f4f3ee]">
-                  Live Adversary Range Engagements
-                </h3>
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Students enter the BGMCS Cyber Range—a sandboxed network mirroring corporate infrastructure with Domain Controllers, vulnerable web endpoints, and legacy mainframes. Teams alternate between Red and Blue roles every forty-eight hours.
+              <div className="border border-[#23262d] bg-[#090a0d] p-6 space-y-3">
+                <div className="font-mono text-xs font-bold text-[#ff3700]">// 02. LABS</div>
+                <h3 className="font-sans font-bold text-lg text-[#f4f3ee]">Supervised Practice</h3>
+                <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                  Real-world scenario simulations inside safe, isolated school sandboxes.
                 </p>
-                <div className="pt-4 border-t border-[#1b1e25] font-mono text-xs text-[#525866]">
-                  BENCHMARK: Exploit a patched vulnerability, maintain persistence, and document complete remediation timeline.
-                </div>
               </div>
 
-              {/* Phase 3 */}
-              <div className="border border-[#23262d] bg-[#090a0d] p-8 space-y-4">
-                <div className="flex items-center justify-between font-mono text-xs text-[#ff3700]">
-                  <span className="font-bold">// PHASE 03</span>
-                  <span>WEEKS 19 &ndash; 26</span>
-                </div>
-                <h3 className="font-sans font-bold text-2xl text-[#f4f3ee]">
-                  Capstone Research &amp; Responsible Disclosure
-                </h3>
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  The terminal requirement. Cadets publish an original technical research report, submit an open-source security tool, or discover and ethically report a vulnerability through sanctioned bug bounty channels under mentor oversight.
+              <div className="border border-[#23262d] bg-[#090a0d] p-6 space-y-3">
+                <div className="font-mono text-xs font-bold text-[#ff3700]">// 03. CAPSTONE</div>
+                <h3 className="font-sans font-bold text-lg text-[#f4f3ee]">Project &amp; Presentation</h3>
+                <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                  Showcasing a team project, tool, or defensive study to peers and teachers.
                 </p>
-                <div className="pt-4 border-t border-[#1b1e25] font-mono text-xs text-[#525866]">
-                  BENCHMARK: Author an in-depth security whitepaper or release an audited defensive open-source tool.
-                </div>
               </div>
-
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* Section 3: Lab Dossier & Criteria (Utilitarian Technical Specs) */}
-      <section id="dossier" className="border-b border-[#23262d] py-20 lg:py-28 bg-[#090a0d]">
+      {/* Section 3: Ethics & Safety (Crucial for principals) */}
+      <section id="dossier" className="border-b border-[#23262d] py-16 lg:py-20 bg-[#090a0d]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
-          <div className="mb-12">
-            <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-2">
-              // 03. LAB DOSSIER &amp; INTEGRITY STANDARDS
+          <div className="mb-10">
+            <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold block mb-1">
+              // 03. ETHICS &amp; SCHOOL SAFETY
             </span>
-            <h2 className="font-serif-display italic text-4xl sm:text-6xl text-[#f4f3ee] tracking-tight">
-              Ethical boundaries are non-negotiable.
+            <h2 className="font-serif-display italic text-3xl sm:text-5xl text-[#f4f3ee] tracking-tight">
+              Responsible learning at all times.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <div className="border border-[#23262d] bg-[#0c0e12] p-8 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="font-mono text-xs text-[#ff3700] mb-3">// STANDARD 01</div>
-                <h3 className="font-sans font-bold text-lg text-[#f4f3ee] mb-2">Authorized Environments Only</h3>
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Club toolsets and exploit payloads must strictly remain within designated BGMCS lab sandboxes. Probing any external system without explicit written permission results in immediate dismissal.
-                </p>
-              </div>
-              <div className="font-mono text-[11px] text-[#525866] pt-4 border-t border-[#1b1e25]">
-                ENFORCEMENT: ZERO TOLERANCE
-              </div>
+            <div className="border border-[#23262d] bg-[#0c0e12] p-6 space-y-3">
+              <div className="font-mono text-xs text-[#ff3700] font-bold">// SAFETY FIRST</div>
+              <h3 className="font-sans font-bold text-base text-[#f4f3ee]">Sandboxed Labs Only</h3>
+              <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                All activities take place within school-approved isolated networks. Safety and containment are absolute priorities.
+              </p>
             </div>
 
-            <div className="border border-[#23262d] bg-[#0c0e12] p-8 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="font-mono text-xs text-[#ff3700] mb-3">// STANDARD 02</div>
-                <h3 className="font-sans font-bold text-lg text-[#f4f3ee] mb-2">Merit-Driven Progression</h3>
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  Advancement through divisions depends entirely on lab task submissions, CTF participation, and peer reviews. Inactivity without formal deferral automatically opens your slot to waitlisted applicants.
-                </p>
-              </div>
-              <div className="font-mono text-[11px] text-[#525866] pt-4 border-t border-[#1b1e25]">
-                TRACKING: AUTOMATED REPO AUDITS
-              </div>
+            <div className="border border-[#23262d] bg-[#0c0e12] p-6 space-y-3">
+              <div className="font-mono text-xs text-[#ff3700] font-bold">// ETHICAL CONDUCT</div>
+              <h3 className="font-sans font-bold text-base text-[#f4f3ee]">Honor Code &amp; Respect</h3>
+              <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                Every member signs a strict academic code of ethics. Skills are taught strictly for constructive defense and education.
+              </p>
             </div>
 
-            <div className="border border-[#23262d] bg-[#0c0e12] p-8 flex flex-col justify-between space-y-6">
-              <div>
-                <div className="font-mono text-xs text-[#ff3700] mb-3">// STANDARD 03</div>
-                <h3 className="font-sans font-bold text-lg text-[#f4f3ee] mb-2">Open Collaboration &amp; Defense</h3>
-                <p className="font-sans text-sm text-[#828792] leading-relaxed">
-                  We believe offensive knowledge is solely justified when used to engineer unshakeable defense. All internal findings are synthesized into defensive signatures and blue-team playbooks.
-                </p>
-              </div>
-              <div className="font-mono text-[11px] text-[#525866] pt-4 border-t border-[#1b1e25]">
-                GOAL: COLLECTIVE HARDENING
-              </div>
+            <div className="border border-[#23262d] bg-[#0c0e12] p-6 space-y-3">
+              <div className="font-mono text-xs text-[#ff3700] font-bold">// MENTORSHIP</div>
+              <h3 className="font-sans font-bold text-base text-[#f4f3ee]">Faculty Oversight</h3>
+              <p className="font-sans text-xs text-[#828792] leading-relaxed">
+                Club activities run under the supervision and guidance of school advisors and experienced student leaders.
+              </p>
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* Section 4: Admissions Intake Ledger (Brutalist Call-To-Action Block) */}
-      <section id="admissions" className="py-20 lg:py-28 bg-[#07080a]">
+      {/* Section 4: Join / CTA Section */}
+      <section id="admissions" className="py-16 lg:py-20 bg-[#07080a]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="border-2 border-[#23262d] bg-[#0a0c10] p-8 sm:p-12 lg:p-16 relative">
-            <div className="absolute top-0 right-0 bg-[#ff3700] text-black font-mono text-[11px] font-bold px-4 py-1 uppercase tracking-wider">
-              CADET RECRUITMENT 2026/27
-            </div>
-
+          <div className="border-2 border-[#23262d] bg-[#0a0c10] p-8 sm:p-12 relative">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-8 space-y-4">
+              <div className="lg:col-span-8 space-y-3">
                 <span className="font-mono text-xs uppercase tracking-widest text-[#ff3700] font-bold">
-                  // 04. ADMISSIONS LEDGER
+                  // 04. GET INVOLVED
                 </span>
-                <h2 className="font-serif-display italic text-4xl sm:text-6xl text-[#f4f3ee] tracking-tight">
-                  Ready to test your limits against real systems?
+                <h2 className="font-serif-display italic text-3xl sm:text-5xl text-[#f4f3ee] tracking-tight">
+                  Ready to explore cybersecurity?
                 </h2>
-                <p className="font-sans text-sm sm:text-base text-[#828792] max-w-2xl leading-relaxed">
-                  We look for deep curiosity, perseverance, and intellectual honesty. If you are ready to put in eight hours a week breaking and repairing systems, submit your application docket.
+                <p className="font-sans text-sm text-[#828792] max-w-xl leading-relaxed">
+                  Whether you are an absolute beginner or already coding, {siteConfig.name} offers a welcoming place to grow, build, and collaborate.
                 </p>
               </div>
 
-              <div className="lg:col-span-4 flex flex-col items-start lg:items-end gap-4">
+              <div className="lg:col-span-4 flex flex-col items-start lg:items-end gap-3">
                 {isClosed ? (
-                  <div className="w-full text-center border border-[#3a3f4a] bg-[#1a1c22] py-4 px-6 font-mono text-xs font-bold text-[#828792]">
-                    APPLICATIONS SEALED FOR THIS CYCLE
+                  <div className="w-full text-center border border-[#3a3f4a] bg-[#1a1c22] py-3.5 px-6 font-mono text-xs font-bold text-[#828792]">
+                    APPLICATIONS CURRENTLY CLOSED
                   </div>
                 ) : (
                   <Link
                     href="/register"
-                    className="w-full text-center bg-[#ff3700] py-4 px-8 font-mono text-xs font-bold uppercase tracking-wider text-black hover:bg-[#ff5419] transition-all duration-150 shadow-brutalist hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                    className="w-full text-center bg-[#ff3700] py-3.5 px-8 font-mono text-xs font-bold uppercase tracking-wider text-black hover:bg-[#ff5419] transition-all duration-150 shadow-brutalist hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                   >
-                    SUBMIT APPLICATION DOSSIER &rarr;
+                    APPLY TO JOIN THE CLUB &rarr;
                   </Link>
                 )}
 
                 <div className="font-mono text-[11px] text-[#525866]">
-                  CURRENT STATUS: <span className="text-[#f4f3ee]">{statusText}</span>
+                  STATUS: <span className="text-[#f4f3ee]">{statusText}</span>
                 </div>
               </div>
             </div>
@@ -480,3 +378,4 @@ export default async function Home() {
     </div>
   );
 }
+

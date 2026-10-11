@@ -43,17 +43,16 @@ export function Footer() {
                 </span>
               </div>
               <p className="font-sans text-sm text-[#828792] max-w-md leading-relaxed">
-                An autonomous student-led offensive security laboratory and defense research division.
-                Training technical operators in reverse engineering, applied cryptanalysis, distributed systems defense,
-                and adversarial penetration.
+                A student-led technology and cybersecurity club dedicated to hands-on computer science,
+                ethical safety, and digital defense skills in a supervised academic environment.
               </p>
             </div>
 
             <div className="p-4 border border-[#23262d] bg-[#0c0e12] font-mono text-xs space-y-1.5 max-w-md">
-              <div className="text-[#ff3700] font-semibold">// NOTICE OF ACADEMIC INTEGRITY</div>
+              <div className="text-[#ff3700] font-semibold">// ACADEMIC ETHICS &amp; SAFETY</div>
               <p className="text-[#828792] text-[11px] leading-normal">
-                All security tools, exercises, and wargame simulations operate under strict authorization protocols
-                in isolated sandboxes. Unsanctioned exploitation is fundamentally prohibited.
+                All activities take place within authorized educational sandboxes under an agreed code of conduct.
+                Safety and academic integrity are fundamental.
               </p>
             </div>
           </div>
