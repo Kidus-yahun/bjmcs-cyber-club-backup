@@ -17,6 +17,7 @@
     "reset:testdata": "node scripts/reset-students.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1152.0",
     "@hookform/resolvers": "^5.9.1",
     "@prisma/client": "^6.19.3",
     "jose": "^6.2.12",

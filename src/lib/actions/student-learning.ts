@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { verifyJwt } from "@/lib/auth";
+import { uploadFileToStorage } from "@/lib/storage";
 
 async function getStudentSession() {
   const token = (await cookies()).get("session")?.value;
@@ -49,18 +50,13 @@ export async function submitTask(taskId: string, formData: FormData) {
   if (file && file.size > 0) {
     if (file.size > 10 * 1024 * 1024) throw new Error("File size must not exceed 10 MB.");
     
-    // We import fs dynamically to avoid issues
-    const { writeFile } = require("fs/promises");
-    const { join } = require("path");
-    
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const uniqueFileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${safeFileName}`;
-    const path = join(process.cwd(), "storage", "uploads", uniqueFileName);
-    
-    await writeFile(path, buffer);
-    fileUrl = uniqueFileName;
+    const uploadResult = await uploadFileToStorage(file.name, buffer, file.type);
+    if (!uploadResult.success || !uploadResult.filename) {
+      throw new Error(uploadResult.error || "File upload failed");
+    }
+    fileUrl = uploadResult.filename;
     originalFileName = file.name;
   } else if (existing) {
     fileUrl = existing.fileUrl;
