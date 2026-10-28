@@ -10,16 +10,16 @@ export default function StatusSelector({
   applicationId, 
   studentId,
   studentKicked,
-  currentStatus,
-  emailStatus,
-  applicationUpdateEmailStatus
+  currentStatus = "PENDING",
+  emailStatus = "NOT_SENT",
+  applicationUpdateEmailStatus = "NOT_SENT"
 }: { 
   applicationId: string; 
   studentId: string | null;
   studentKicked: boolean;
-  currentStatus: ApplicationStatus;
-  emailStatus: SelectionEmailStatus;
-  applicationUpdateEmailStatus: SelectionEmailStatus;
+  currentStatus?: ApplicationStatus;
+  emailStatus?: SelectionEmailStatus;
+  applicationUpdateEmailStatus?: SelectionEmailStatus;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -72,7 +72,7 @@ export default function StatusSelector({
         <div className="relative flex-1 sm:flex-none">
           <select
             id="status"
-            value={currentStatus}
+            value={currentStatus || "PENDING"}
             onChange={handleStatusChange}
             disabled={isPending || isEmailing}
             className={`w-full sm:w-48 appearance-none pl-9 pr-8 py-2 text-sm font-bold rounded-md border focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 focus:outline-none transition-colors shadow-sm ${

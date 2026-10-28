@@ -1,21 +1,76 @@
 import { db } from "@/lib/db";
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import StatusSelector from "./StatusSelector";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
-import { ArrowLeft, User, ShieldAlert, Heart, Code, FolderOpen, Calendar, Mail } from "lucide-react";
+import { ArrowLeft, User, ShieldAlert, Heart, Code, FolderOpen, Calendar, AlertCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function ApplicationDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  
-  const application = await db.application.findUnique({
-    where: { id },
-    include: { projects: true, student: { select: { id: true, kickedAt: true } } },
-  });
+  const resolvedParams = await params;
+  const id = resolvedParams?.id;
 
-  if (!application) return notFound();
+  if (!id) {
+    return (
+      <div className="space-y-6 max-w-5xl mx-auto py-12 text-center">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Invalid Application ID</h2>
+        <div className="mt-6">
+          <Link href="/admin/applications" className="inline-flex items-center text-sm font-medium text-blue-600 hover:underline">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Back to Applications
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  let application;
+  try {
+    application = await db.application.findUnique({
+      where: { id },
+      include: { projects: true, student: { select: { id: true, kickedAt: true } } },
+    });
+  } catch (error) {
+    console.error("Failed to fetch application:", error);
+    return (
+      <div className="space-y-6 max-w-5xl mx-auto py-12 text-center">
+        <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full inline-flex mb-4">
+          <AlertCircle className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Error Loading Application</h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">Could not retrieve application details from the database.</p>
+        <div className="mt-6">
+          <Link href="/admin/applications" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Applications
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!application) {
+    return (
+      <div className="space-y-6 max-w-5xl mx-auto py-12 text-center">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Application Not Found</h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">The requested application does not exist or has been removed.</p>
+        <div className="mt-6">
+          <Link href="/admin/applications" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Applications
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const programmingLangs = application.programmingLangs || [];
+  const operatingSystems = application.operatingSystems || [];
+  const cyberTopics = application.cyberTopics || [];
+  const projects = application.projects || [];
+  const weeklyAvailabilityFormatted = application.weeklyAvailability
+    ? String(application.weeklyAvailability).replace(/_/g, " ").toLowerCase()
+    : "Not specified";
+  const formattedDate = application.createdAt
+    ? new Date(application.createdAt).toLocaleString()
+    : "N/A";
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -28,16 +83,16 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
       <div className="bg-white dark:bg-[#0a1628] rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-3">
-            {application.fullName}
+            {application.fullName || "Unnamed Applicant"}
           </h1>
           <div className="flex items-center gap-3 mt-2 text-sm text-slate-500 dark:text-slate-400">
             <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
-              Ref: {application.reference}
+              Ref: {application.reference || "N/A"}
             </span>
             <span>&bull;</span>
             <span className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" /> 
-              {new Date(application.createdAt).toLocaleString()}
+              {formattedDate}
             </span>
           </div>
         </div>
@@ -47,9 +102,9 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
             applicationId={application.id} 
             studentId={application.student?.id ?? null}
             studentKicked={Boolean(application.student?.kickedAt)}
-            currentStatus={application.status} 
-            emailStatus={application.selectionEmailStatus}
-            applicationUpdateEmailStatus={application.applicationUpdateEmailStatus}
+            currentStatus={application.status ?? "PENDING"} 
+            emailStatus={application.selectionEmailStatus ?? "NOT_SENT"}
+            applicationUpdateEmailStatus={application.applicationUpdateEmailStatus ?? "NOT_SENT"}
           />
         </div>
       </div>
@@ -66,19 +121,19 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Age</p>
-                <p className="font-medium text-slate-900 dark:text-slate-100">{application.age}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{application.age ?? "N/A"}</p>
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Gender</p>
-                <p className="font-medium text-slate-900 dark:text-slate-100">{application.gender}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{application.gender || "Not specified"}</p>
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50 col-span-2 sm:col-span-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Phone</p>
-                <p className="font-medium text-slate-900 dark:text-slate-100">{application.phone}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{application.phone || "Not specified"}</p>
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50 col-span-2 sm:col-span-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Email</p>
-                <p className="font-medium text-slate-900 dark:text-slate-100 truncate" title={application.email}>{application.email}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100 truncate" title={application.email}>{application.email || "Not specified"}</p>
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50 col-span-2 sm:col-span-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Telegram Username</p>
@@ -86,11 +141,11 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Grade</p>
-                <p className="font-medium text-slate-900 dark:text-slate-100">{application.grade}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{application.grade || "N/A"}</p>
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Section</p>
-                <p className="font-medium text-slate-900 dark:text-slate-100">{application.section}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{application.section || "N/A"}</p>
               </div>
             </div>
           </CardContent>
@@ -114,7 +169,7 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
                 </span>
                 {application.hasStudiedCyber && application.cyberStudyDesc && (
                   <p className="mt-3 text-sm text-slate-600 dark:text-slate-400 border-l-2 border-purple-500 pl-3 italic">
-                    "{application.cyberStudyDesc}"
+                    &ldquo;{application.cyberStudyDesc}&rdquo;
                   </p>
                 )}
               </div>
@@ -123,7 +178,7 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
             <div>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Programming Experience</p>
               <p className="text-sm text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
-                {application.programmingExp}
+                {application.programmingExp || "NONE"}
               </p>
             </div>
             
@@ -131,7 +186,7 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Languages</p>
                 <div className="flex flex-wrap gap-2">
-                  {application.programmingLangs.length ? application.programmingLangs.map(l => (
+                  {programmingLangs.length ? programmingLangs.map(l => (
                     <span key={l} className="px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50 rounded-md text-xs font-medium shadow-sm">{l}</span>
                   )) : <span className="text-slate-400 text-sm italic">None</span>}
                 </div>
@@ -139,7 +194,7 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Operating Systems</p>
                 <div className="flex flex-wrap gap-2">
-                  {application.operatingSystems.length ? application.operatingSystems.map((operatingSystem) => (
+                  {operatingSystems.length ? operatingSystems.map((operatingSystem) => (
                     <span key={operatingSystem} className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50 rounded-md text-xs font-medium shadow-sm">{operatingSystem}</span>
                   )) : <span className="text-slate-400 text-sm italic">None</span>}
                 </div>
@@ -147,7 +202,7 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Interests</p>
                 <div className="flex flex-wrap gap-2">
-                  {application.cyberTopics.length ? application.cyberTopics.map(t => (
+                  {cyberTopics.length ? cyberTopics.map(t => (
                     <span key={t} className="px-2.5 py-1 bg-cyan-50 text-cyan-700 border border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-400 dark:border-cyan-800/50 rounded-md text-xs font-medium shadow-sm">{t}</span>
                   )) : <span className="text-slate-400 text-sm italic">None</span>}
                 </div>
@@ -168,13 +223,13 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
               <div>
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Why do you want to join?</p>
                 <div className="p-4 bg-slate-50 dark:bg-[#0a1628] rounded-xl border border-slate-100 dark:border-slate-800/80 text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap shadow-inner h-full">
-                  {application.motivationJoin}
+                  {application.motivationJoin || "No response provided"}
                 </div>
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">What do you hope to learn?</p>
                 <div className="p-4 bg-slate-50 dark:bg-[#0a1628] rounded-xl border border-slate-100 dark:border-slate-800/80 text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap shadow-inner h-full">
-                  {application.motivationLearn}
+                  {application.motivationLearn || "No response provided"}
                 </div>
               </div>
             </div>
@@ -182,7 +237,7 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800/50">
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Weekly Availability</p>
-                <p className="font-medium text-slate-900 dark:text-slate-100 capitalize">{application.weeklyAvailability.replace(/_/g, " ").toLowerCase()}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100 capitalize">{weeklyAvailabilityFormatted}</p>
               </div>
               <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/50">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Discovery Channel</p>
@@ -202,20 +257,20 @@ export default async function ApplicationDetailsPage({ params }: { params: Promi
         <Card className="md:col-span-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] shadow-sm">
           <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <FolderOpen className="w-5 h-5 text-amber-500" /> Portfolio Projects <span className="ml-2 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 text-xs px-2 py-0.5 rounded-full">{application.projects.length}</span>
+              <FolderOpen className="w-5 h-5 text-amber-500" /> Portfolio Projects <span className="ml-2 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 text-xs px-2 py-0.5 rounded-full">{projects.length}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            {application.projects.length === 0 ? (
+            {projects.length === 0 ? (
               <div className="text-center py-8 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
                 <FolderOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">No projects submitted with this application.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {application.projects.map((proj) => (
+                {projects.map((proj) => (
                   <div key={proj.id} className="p-5 bg-white dark:bg-[#0a1628] border border-slate-200 dark:border-slate-800/80 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                    <h4 className="font-bold text-lg text-slate-900 dark:text-slate-100 mb-2">{proj.projectName}</h4>
+                    <h4 className="font-bold text-lg text-slate-900 dark:text-slate-100 mb-2">{proj.projectName || "Untitled Project"}</h4>
                     {proj.description && <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">{proj.description}</p>}
                     <div className="flex flex-wrap gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/50 mt-auto">
                       {proj.githubUrl && (
